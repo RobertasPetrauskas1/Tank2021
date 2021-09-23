@@ -62,6 +62,7 @@ namespace Tank2021
             {
                 endpoints.MapBlazorHub();
                 endpoints.MapHub<ChatHub>("/chathub");
+                endpoints.MapHub<TankHub>("/tankhub");
                 endpoints.MapFallbackToPage("/_Host");
             });
         }

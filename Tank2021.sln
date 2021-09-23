@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tank2021", "Tank2021\Tank2021.csproj", "{5913F673-F2E0-45BD-81A9-6F99F22E7534}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tank2021", "Tank2021\Tank2021.csproj", "{5913F673-F2E0-45BD-81A9-6F99F22E7534}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,90 @@
+﻿@page "/tankdemo"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NavigationManager
+@implements IAsyncDisposable
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions.Canvas.Canvas2D
+@using Blazor.Extensions
+
+<div style="border: 2px solid black; display: inline-block;" tabindex="0" @onkeydown="(async (args) => await Move(args))">
+    <BECanvas Width="canvasWidth" Height="canvasHeight" @ref="_canvasReference"></BECanvas>
+</div>
+
+@code {
+    private HubConnection hubConnection;
+    private Canvas2DContext _context;
+    protected BECanvasComponent _canvasReference;
+
+    int canvasWidth = 500;
+    int canvasHeight = 500;
+
+    bool created = false;
+
+    int x = 0;
+    int y = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/tankhub"))
+            .Build();
+
+        await hubConnection.StartAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _context = await this._canvasReference.CreateCanvas2DAsync();
+
+        if(!created)
+        {
+            hubConnection.On<string>("ReceivedMovement", async (direction) =>
+            {
+                switch (direction)
+                {
+                    case "ArrowDown":
+                        await _context.ClearRectAsync(0, 0, canvasWidth, canvasHeight);
+                        y = y + 5;
+                        await _context.FillRectAsync(x, y, 25, 25);
+                        break;
+                    case "ArrowUp":
+                        await _context.ClearRectAsync(0, 0, canvasWidth, canvasHeight);
+                        y = y - 5;
+                        await _context.FillRectAsync(x, y, 25, 25);
+                        break;
+                    case "ArrowLeft":
+                        await _context.ClearRectAsync(0, 0, canvasWidth, canvasHeight);
+                        x = x - 5;
+                        await _context.FillRectAsync(x, y, 25, 25);
+                        break;
+                    case "ArrowRight":
+                        await _context.ClearRectAsync(0, 0, canvasWidth, canvasHeight);
+                        x = x + 5;
+                        await _context.FillRectAsync(x, y, 25, 25);
+                        break;
+                    default:
+                        break;
+                }
+
+                StateHasChanged();
+            });
+
+            created = true;
+        }
+    }
+
+    async Task Move(KeyboardEventArgs e) =>
+        await hubConnection.SendAsync("SendMovement", e);
+
+    public bool IsConnected =>
+        hubConnection.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+
+}
