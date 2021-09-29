@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tank2021", "Tank2021\Tank2021.csproj", "{5913F673-F2E0-45BD-81A9-6F99F22E7534}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tank2021Client", "Tank2021Client\Tank2021Client.csproj", "{22159A14-8D5C-4F5B-93FC-FE0C17BD263E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tank2021Server", "Tank2021Server\Tank2021Server.csproj", "{898F006D-64A5-4BE4-9D0E-E740F4631487}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{5913F673-F2E0-45BD-81A9-6F99F22E7534}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5913F673-F2E0-45BD-81A9-6F99F22E7534}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5913F673-F2E0-45BD-81A9-6F99F22E7534}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22159A14-8D5C-4F5B-93FC-FE0C17BD263E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22159A14-8D5C-4F5B-93FC-FE0C17BD263E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22159A14-8D5C-4F5B-93FC-FE0C17BD263E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22159A14-8D5C-4F5B-93FC-FE0C17BD263E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{898F006D-64A5-4BE4-9D0E-E740F4631487}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{898F006D-64A5-4BE4-9D0E-E740F4631487}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{898F006D-64A5-4BE4-9D0E-E740F4631487}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{898F006D-64A5-4BE4-9D0E-E740F4631487}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
