@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -37,6 +38,8 @@ namespace Tank2021Server
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
+
+            var hubContext = app.ApplicationServices.GetService<IHubContext<TankHub>>();
 
             app.UseEndpoints(endpoints =>
             {
