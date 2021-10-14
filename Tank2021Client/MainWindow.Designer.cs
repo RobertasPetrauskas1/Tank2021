@@ -36,9 +36,10 @@ namespace Tank2021Client
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(87, 128);
+            this.button1.Location = new System.Drawing.Point(76, 96);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(203, 31);
+            this.button1.Size = new System.Drawing.Size(178, 23);
             this.button1.TabIndex = 0;
             this.button1.Text = "Player1";
             this.button1.UseVisualStyleBackColor = true;
@@ -46,9 +47,10 @@ namespace Tank2021Client
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(87, 230);
+            this.button2.Location = new System.Drawing.Point(76, 172);
+            this.button2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(203, 34);
+            this.button2.Size = new System.Drawing.Size(178, 26);
             this.button2.TabIndex = 1;
             this.button2.Text = "Player2";
             this.button2.UseVisualStyleBackColor = true;
@@ -58,22 +60,24 @@ namespace Tank2021Client
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(118, 46);
+            this.label1.Location = new System.Drawing.Point(103, 34);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(156, 20);
+            this.label1.Size = new System.Drawing.Size(124, 15);
             this.label1.TabIndex = 2;
             this.label1.Text = "Tank2021 StartMenu";
             // 
             // MainWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(396, 331);
+            this.ClientSize = new System.Drawing.Size(346, 248);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "MainWindow";
             this.Text = "StartMenu";
+            this.Load += new System.EventHandler(this.MainWindow_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

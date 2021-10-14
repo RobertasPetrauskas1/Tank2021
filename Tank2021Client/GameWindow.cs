@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Tank2021SharedContent;
 
 namespace Tank2021Client
 {
@@ -17,7 +18,7 @@ namespace Tank2021Client
         private const string ConnectionUrl = "https://localhost:5001/TankHub";
         private HubConnection _hubConnection;
         private Bitmap BattleField;
-        public GameWindow()
+        public GameWindow(PlayerType player)
         {
             InitializeComponent();
             StartSignalR();
@@ -40,12 +41,25 @@ namespace Tank2021Client
             Graphics.FromImage(BattleField);
         }
 
-        private void InitializeComponent()
+        private void InitializeComponent(PlayerType player)
         {
-            this.components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // GameWindow
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Name = player.ToString();
             this.Text = "GameWindow";
+            this.Load += new System.EventHandler(this.GameWindow_Load);
+            this.ResumeLayout(false);
+
+        }
+
+        private void GameWindow_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
