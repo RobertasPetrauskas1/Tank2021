@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Tank2021.Hubs;
+using Tank2021SharedContent;
 
 namespace Tank2021Server
 {
@@ -40,7 +41,7 @@ namespace Tank2021Server
             app.UseAuthorization();
 
             var hubContext = app.ApplicationServices.GetService<IHubContext<TankHub>>();
-
+            MapSingleton.setMapController(new Map());
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<TankHub>("/tankhub");

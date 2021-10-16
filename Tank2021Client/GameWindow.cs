@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,6 +12,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tank2021SharedContent;
+using Tank2021SharedContent.Constants;
+using Tank2021SharedContent.Enums;
 
 namespace Tank2021Client
 {
@@ -17,11 +21,24 @@ namespace Tank2021Client
     {
         private const string ConnectionUrl = "https://localhost:5001/TankHub";
         private HubConnection _hubConnection;
-        private Bitmap BattleField;
+        PlayerType playerType;
+        IList<Figure> figures;
+        bool initialized = false;
         public GameWindow(PlayerType player)
         {
-            InitializeComponent();
+            playerType = player;
+            
+            InitializeComponent(player);
+            this.SetStyle(  //Reduce flickering
+                ControlStyles.OptimizedDoubleBuffer |
+                ControlStyles.AllPaintingInWmPaint |
+                ControlStyles.UserPaint,
+                true);
+            this.UpdateStyles();
+
             StartSignalR();
+
+            figures = new List<Figure>();
         }
 
         public void StartSignalR()
@@ -30,36 +47,100 @@ namespace Tank2021Client
                 .WithUrl(ConnectionUrl)
                 .Build();
 
-            //On smth insert here
+            _hubConnection.On<string>("UpdateMap", (updatedMap) =>
+            {
+                var map = JsonConvert.DeserializeObject<Map>(updatedMap);
+                UpdateMap(map);
+            });
 
             _hubConnection.StartAsync();
         }
 
-        public void InitializeGameModel()
+        public void UpdateMap(Map map)
         {
-            BattleField = new Bitmap(1000, 1000, PixelFormat.Format24bppRgb);
-            Graphics.FromImage(BattleField);
+            figures = new List<Figure>();
+            UpdateTank(map.GetPlayer(PlayerType.PLAYER1).Tank);
+            UpdateTank(map.GetPlayer(PlayerType.PLAYER2).Tank);
+            Invalidate();
+        }
+
+        private void UpdateTank(Tank tank)
+        {
+            if (tank != null)
+            {
+                var tankImage = Image.FromFile(tank.ImageLocation);
+                figures.Add(new Figure(tank.Coordinates, tankImage.Width, tankImage.Height, tank.Rotation, tankImage));
+            }
+        }
+
+        private async void GameWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch(e.KeyCode)
+            {
+                case Keys.Enter:
+                    if (!initialized)
+                    {
+                        await _hubConnection.SendAsync("InitializeGame", playerType);
+                        this.gameStartLabel.Visible = false;
+                    }
+                    break;
+                case Keys.Up:
+                    await _hubConnection.SendAsync("MoveUp", playerType);
+                    break;
+                case Keys.Down:
+                    await _hubConnection.SendAsync("MoveDown", playerType);
+                    break;
+                case Keys.Left:
+                    await _hubConnection.SendAsync("MoveLeft", playerType);
+                    break;
+                case Keys.Right:
+                    await _hubConnection.SendAsync("MoveRight", playerType);
+                    break;
+            }
+        }
+
+        private void GameWindow_Paint(object sender, PaintEventArgs e)
+        {
+            var graphics = e.Graphics;
+            foreach (var figure in figures)
+                figure.Draw(graphics);
         }
 
         private void InitializeComponent(PlayerType player)
         {
+            this.components = new System.ComponentModel.Container();
             this.SuspendLayout();
-            // 
-            // GameWindow
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Name = player.ToString();
-            this.Text = "GameWindow";
-            this.Load += new System.EventHandler(this.GameWindow_Load);
+            InitializeGameWindow(player);
+            InitializeLabel();
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameWindow_KeyDown);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.GameWindow_Paint);
             this.ResumeLayout(false);
-
+            this.PerformLayout();
         }
 
-        private void GameWindow_Load(object sender, EventArgs e)
+        private void InitializeGameWindow(PlayerType player)
         {
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(ClientSideConstants.ClientWidth, ClientSideConstants.ClientHeight);
+            this.Name = "GameWindow";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = player.ToString();
+        }
 
+        private void InitializeLabel()
+        {
+            this.gameStartLabel = new System.Windows.Forms.Label();
+            this.gameStartLabel.AutoSize = false;
+            this.gameStartLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.gameStartLabel.Location = new System.Drawing.Point(61, 105);
+            this.gameStartLabel.Name = "gameStartLabel";
+            this.gameStartLabel.Size = new System.Drawing.Size(153, 20);
+            this.gameStartLabel.TabIndex = 0;
+            this.gameStartLabel.Text = "press ENTER to start";
+            this.gameStartLabel.TextAlign = ContentAlignment.MiddleCenter;
+            this.gameStartLabel.Dock = DockStyle.Fill;
+            this.Controls.Add(this.gameStartLabel);
         }
     }
 }

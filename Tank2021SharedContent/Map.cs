@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using Tank2021SharedContent.Enums;
 
 namespace Tank2021SharedContent
 {
@@ -14,14 +16,13 @@ namespace Tank2021SharedContent
             player2 = new Player();
         }
 
-        public Player GetPlayer(PlayerType type)
-        {
-            return type == PlayerType.PLAYER1 ? player1 : player2;
-        }
-        public string ToJson()
-        {
-            JObject mapJson = (JObject)JToken.FromObject(this);
-            return mapJson.ToString();
-        }
+        public Player GetPlayer(PlayerType type) => type == PlayerType.PLAYER1 ? player1 : player2;
+
+        public void MoveDown(PlayerType player) => GetPlayer(player).Tank.MoveDown();
+        public void MoveUp(PlayerType player) => GetPlayer(player).Tank.MoveUp();
+        public void MoveLeft(PlayerType player) => GetPlayer(player).Tank.MoveLeft();
+        public void MoveRight(PlayerType player) => GetPlayer(player).Tank.MoveRight();
+
+        public string ToJson() => JsonConvert.SerializeObject(this);
     }
 }
