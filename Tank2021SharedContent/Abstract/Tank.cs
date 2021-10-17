@@ -17,8 +17,9 @@ namespace Tank2021SharedContent
         public RotateFlipType Rotation;
         public string ImageLocation;
 
-        public Tank(Point coordinates, int speed, RotateFlipType rotation, string imageLocation)
+        public Tank(Gun gun, Point coordinates, int speed, RotateFlipType rotation, string imageLocation)
         {
+            Gun = gun;
             Coordinates = coordinates;
             Speed = speed;
             Rotation = rotation;
@@ -83,6 +84,11 @@ namespace Tank2021SharedContent
                 Coordinates.X -= Speed;
                 Rotation = RotateFlipType.Rotate270FlipX;
             }
+        }
+
+        public Bullet Shoot()
+        {
+            return Gun.Shoot(Coordinates, Rotation);
         }
     }
 }

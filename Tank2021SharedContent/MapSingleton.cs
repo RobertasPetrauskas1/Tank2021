@@ -7,11 +7,11 @@ namespace Tank2021SharedContent
     public static class MapSingleton
     {
         static Map map;
-        public static void setMapController(Map map)
+        public static void setMap(Map map)
         {
             MapSingleton.map = map;
         }
-        public static Map getMapController()
+        public static Map getMap()
         {
             return map;
         }

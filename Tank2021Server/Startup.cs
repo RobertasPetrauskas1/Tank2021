@@ -41,7 +41,7 @@ namespace Tank2021Server
             app.UseAuthorization();
 
             var hubContext = app.ApplicationServices.GetService<IHubContext<TankHub>>();
-            MapSingleton.setMapController(new Map());
+            MapSingleton.setMap(new Map());
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<TankHub>("/tankhub");

@@ -96,6 +96,9 @@ namespace Tank2021Client
                 case Keys.Right:
                     await _hubConnection.SendAsync("MoveRight", playerType);
                     break;
+                case Keys.Space:
+                    await _hubConnection.SendAsync("Shoot", playerType);
+                    break;
             }
         }
 
