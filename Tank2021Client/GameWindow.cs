@@ -49,7 +49,7 @@ namespace Tank2021Client
 
             _hubConnection.On<string>("UpdateMap", (updatedMap) =>
             {
-                var map = JsonConvert.DeserializeObject<Map>(updatedMap);
+                var map = JsonConvert.DeserializeObject<Map>(updatedMap, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
                 UpdateMap(map);
             });
 
@@ -61,6 +61,8 @@ namespace Tank2021Client
             figures = new List<Figure>();
             UpdateTank(map.GetPlayer(PlayerType.PLAYER1).Tank);
             UpdateTank(map.GetPlayer(PlayerType.PLAYER2).Tank);
+            UpdateBullets(map.GetPlayer(PlayerType.PLAYER1).Tank?.Gun?.Bullets);
+            UpdateBullets(map.GetPlayer(PlayerType.PLAYER2).Tank?.Gun?.Bullets);
             Invalidate();
         }
 
@@ -70,6 +72,18 @@ namespace Tank2021Client
             {
                 var tankImage = Image.FromFile(tank.ImageLocation);
                 figures.Add(new Figure(tank.Coordinates, tankImage.Width, tankImage.Height, tank.Rotation, tankImage));
+            }
+        }
+
+        private void UpdateBullets(List<Bullet> bullets)
+        {
+            if(bullets != null && bullets.Any())
+            {
+                foreach(var bullet in bullets)
+                {
+                    var bulletImage = Image.FromFile(bullet.ImageLocation);
+                    figures.Add(new Figure(bullet.Coordinates, bulletImage.Width, bulletImage.Height, bullet.Rotation, bulletImage));
+                }
             }
         }
 

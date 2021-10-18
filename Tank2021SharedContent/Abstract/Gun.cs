@@ -10,7 +10,8 @@ namespace Tank2021SharedContent
     {
         public int Damage;
         public int Speed;
-        public Bullet Shoot(Point currentCoordinates, RotateFlipType flipType)
+        public List<Bullet> Bullets = new List<Bullet>();
+        public void Shoot(Point currentCoordinates, RotateFlipType flipType)
         {
             Direction direction;
             switch (flipType)
@@ -30,7 +31,8 @@ namespace Tank2021SharedContent
                 default:
                     throw new Exception("Unknown RotateFlipType");
             }
-            return new Bullet(Damage, direction, currentCoordinates, Speed, flipType);
+
+            Bullets.Add(new Bullet(Damage, direction, currentCoordinates, Speed, flipType));
         }
     }
 }

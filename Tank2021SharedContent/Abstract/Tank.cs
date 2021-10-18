@@ -86,9 +86,9 @@ namespace Tank2021SharedContent
             }
         }
 
-        public Bullet Shoot()
+        public void Shoot()
         {
-            return Gun.Shoot(Coordinates, Rotation);
+            Gun.Shoot(Coordinates, Rotation);
         }
     }
 }

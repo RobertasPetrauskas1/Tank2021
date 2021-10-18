@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using Tank2021Server;
 using Tank2021SharedContent;
 using Tank2021SharedContent.Enums;
 using Tank2021SharedContent.Guns;
@@ -13,17 +14,13 @@ namespace Tank2021.Hubs
 {
     public class TankHub : Hub
     {
-        public Timer timer = new Timer();
-        public static double timerSpeed = 36; //~30times per second
-        bool IsGameInitialized = false;
-
         public async Task InitializeGame(PlayerType player)
         {
-            var map = MapSingleton.getMap();
+            var mapController = MapControllerSingleton.getMapController();
 
             if(player == PlayerType.PLAYER1)
             {
-                var player1 = map.GetPlayer(player);
+                var player1 = mapController.Map.GetPlayer(player);
 
                 player1.Coins = 0;
                 player1.Tank = new Tank(new BaseGun(), new Point(30, 26), 5, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/tank.png");
@@ -31,69 +28,48 @@ namespace Tank2021.Hubs
 
             if(player == PlayerType.PLAYER2)
             {
-                var player2 = map.GetPlayer(player);
+                var player2 = mapController.Map.GetPlayer(player);
 
                 player2.Coins = 0;
                 player2.Tank = new Tank(new BaseGun(), new Point(800, 26), 5, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/tank.png");
             }
 
-            await Clients.All.SendAsync("UpdateMap", map.ToJson());
-            IsGameInitialized = true;
-            AddGameCycle();
+            await Clients.All.SendAsync("UpdateMap", mapController.Map.ToJson());
         }
 
         public async Task MoveDown(PlayerType player)
         {
-            var map = MapSingleton.getMap();
-            map.MoveDown(player);
-            await Clients.All.SendAsync("UpdateMap", map.ToJson());
+            var mapController = MapControllerSingleton.getMapController();
+            mapController.Map.MoveDown(player);
+            await Clients.All.SendAsync("UpdateMap", mapController.Map.ToJson());
         }
 
         public async Task MoveUp(PlayerType player)
         {
-            var map = MapSingleton.getMap();
-            map.MoveUp(player);
-            await Clients.All.SendAsync("UpdateMap", map.ToJson());
+            var mapController = MapControllerSingleton.getMapController();
+            mapController.Map.MoveUp(player);
+            await Clients.All.SendAsync("UpdateMap", mapController.Map.ToJson());
         }
 
         public async Task MoveLeft(PlayerType player)
         {
-            var map = MapSingleton.getMap();
-            map.MoveLeft(player);
-            await Clients.All.SendAsync("UpdateMap", map.ToJson());
+            var mapController = MapControllerSingleton.getMapController();
+            mapController.Map.MoveLeft(player);
+            await Clients.All.SendAsync("UpdateMap", mapController.Map.ToJson());
         }
 
         public async Task MoveRight(PlayerType player)
         {
-            var map = MapSingleton.getMap();
-            map.MoveRight(player);
-            await Clients.All.SendAsync("UpdateMap", map.ToJson());
+            var mapController = MapControllerSingleton.getMapController();
+            mapController.Map.MoveRight(player);
+            await Clients.All.SendAsync("UpdateMap", mapController.Map.ToJson());
         }
 
         public async Task Shoot(PlayerType player)
         {
-            var map = MapSingleton.getMap();
-            map.Shoot(player);
-            await Clients.All.SendAsync("UpdateMap", map.ToJson());
-        }
-        private void AddGameCycle()
-        {
-            timer.Elapsed += async (Object source, ElapsedEventArgs e) =>
-            {
-                var map = MapSingleton.getMap();
-                foreach(var bullet in map.bullets)
-                {
-                    if (bullet.MarkForDelete)
-                    {
-                        map.bullets.Remove(bullet);
-                    }
-                    else
-                    {
-                        bullet.Move();
-                    }            
-                }
-                await Clients.All.SendAsync("UpdateMap", map.ToJson());
-            };
+            var mapController = MapControllerSingleton.getMapController();
+            mapController.Map.Shoot(player);
+            await Clients.All.SendAsync("UpdateMap", mapController.Map.ToJson());
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Tank2021SharedContent.Guns
         public BaseGun()
         {
             Damage = 10;
-            Speed = 1;
+            Speed = 5;
         }
     }
 }
