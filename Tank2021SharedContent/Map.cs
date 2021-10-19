@@ -24,6 +24,6 @@ namespace Tank2021SharedContent
         public void MoveLeft(PlayerType player) => GetPlayer(player).Tank.MoveLeft();
         public void MoveRight(PlayerType player) => GetPlayer(player).Tank.MoveRight();
         public void Shoot(PlayerType player) => GetPlayer(player).Tank.Shoot();
-        public string ToJson() => JsonConvert.SerializeObject(this, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
+        public string ToJson() => JsonConvert.SerializeObject(this.MemberwiseClone(), new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
     }
 }

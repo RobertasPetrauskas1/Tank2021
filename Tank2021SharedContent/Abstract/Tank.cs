@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using Tank2021SharedContent.Abstract;
 using Tank2021SharedContent.Constants;
 
@@ -16,28 +17,21 @@ namespace Tank2021SharedContent
         public int Speed;
         public RotateFlipType Rotation;
         public string ImageLocation;
+        public int Health;
 
-        public Tank(Gun gun, Point coordinates, int speed, RotateFlipType rotation, string imageLocation)
+        public Tank(Gun gun, Point coordinates, int speed, RotateFlipType rotation, string imageLocation, int health)
         {
             Gun = gun;
             Coordinates = coordinates;
             Speed = speed;
             Rotation = rotation;
             ImageLocation = imageLocation;
+            Health = health;
         }
 
         public void GetHit(int damage)
         {
-            int calculatedDamage = damage - Armor.DamageReduction;
-            calculatedDamage = calculatedDamage < 0 ? 0 : calculatedDamage;
-            
-            Hitpoints = Hitpoints - calculatedDamage;
-            if(Hitpoints <= 0)
-            {
-                //TODO: Gameover
-            }
-
-            Armor.GetHit();
+            Health -= damage;
         }
 
         public bool IsHittingBorder(int width, int height)
@@ -88,7 +82,7 @@ namespace Tank2021SharedContent
 
         public void Shoot()
         {
-            Gun.Shoot(Coordinates, Rotation);
+            Gun.Shoot(Helper.GetShotLocation(this), Rotation);
         }
     }
 }

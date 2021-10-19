@@ -8,6 +8,7 @@ namespace Tank2021SharedContent.Guns
     {
         public BaseGun()
         {
+            Cooldown = TimeSpan.FromSeconds(1); //1 second cooldown
             Damage = 10;
             Speed = 5;
         }

@@ -12,7 +12,7 @@ namespace Tank2021SharedContent.Constants
         public const int TankWidth = 65;
         public const int TankHeight = 88;
 
-        public const int BulletWidth = 10;
-        public const int BulletHeight = 40;
+        public const int BulletWidth = 25;
+        public const int BulletHeight = 25;
     }
 }

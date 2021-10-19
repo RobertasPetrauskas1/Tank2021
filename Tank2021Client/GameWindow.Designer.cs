@@ -69,5 +69,6 @@ namespace Tank2021Client
         private System.Windows.Forms.PictureBox player1Tank;
         private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Label gameStartLabel;
+        private System.Windows.Forms.Label gameEndLabel;
     }
 }

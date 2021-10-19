@@ -24,6 +24,7 @@ namespace Tank2021Client
         PlayerType playerType;
         IList<Figure> figures;
         bool initialized = false;
+        bool gameIsNotStarted = true;
         public GameWindow(PlayerType player)
         {
             playerType = player;
@@ -47,13 +48,38 @@ namespace Tank2021Client
                 .WithUrl(ConnectionUrl)
                 .Build();
 
+            _hubConnection.On<string>("InitializeGame", (startingMap) => 
+            {
+                var map = JsonConvert.DeserializeObject<Map>(startingMap, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
+                InitializeMap(map);
+            });
+
+            _hubConnection.On<PlayerType>("GameOver", (playerType) =>
+            {
+                 GameOver(playerType);
+            });
+
+            _hubConnection.StartAsync();
+        }
+
+        public void GameOver(PlayerType player)
+        {
+            _hubConnection.Remove("UpdateMap");
+            gameIsNotStarted = true;
+            this.gameEndLabel.Text = $"{player} WON, press ENTER to play again";
+            this.gameEndLabel.Visible = true;
+            initialized = false;
+        }
+
+        public void InitializeMap(Map map)
+        {
             _hubConnection.On<string>("UpdateMap", (updatedMap) =>
             {
                 var map = JsonConvert.DeserializeObject<Map>(updatedMap, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
                 UpdateMap(map);
             });
 
-            _hubConnection.StartAsync();
+            UpdateMap(map);
         }
 
         public void UpdateMap(Map map)
@@ -96,22 +122,29 @@ namespace Tank2021Client
                     {
                         await _hubConnection.SendAsync("InitializeGame", playerType);
                         this.gameStartLabel.Visible = false;
+                        this.gameEndLabel.Visible = false;
+                        gameIsNotStarted = false;
                     }
                     break;
                 case Keys.Up:
-                    await _hubConnection.SendAsync("MoveUp", playerType);
+                    if (!gameIsNotStarted)
+                        await _hubConnection.SendAsync("MoveUp", playerType);
                     break;
                 case Keys.Down:
-                    await _hubConnection.SendAsync("MoveDown", playerType);
+                    if (!gameIsNotStarted)
+                        await _hubConnection.SendAsync("MoveDown", playerType);
                     break;
                 case Keys.Left:
-                    await _hubConnection.SendAsync("MoveLeft", playerType);
+                    if (!gameIsNotStarted)
+                        await _hubConnection.SendAsync("MoveLeft", playerType);
                     break;
                 case Keys.Right:
-                    await _hubConnection.SendAsync("MoveRight", playerType);
+                    if (!gameIsNotStarted)
+                        await _hubConnection.SendAsync("MoveRight", playerType);
                     break;
                 case Keys.Space:
-                    await _hubConnection.SendAsync("Shoot", playerType);
+                    if (!gameIsNotStarted)
+                        await _hubConnection.SendAsync("Shoot", playerType);
                     break;
             }
         }
@@ -128,7 +161,8 @@ namespace Tank2021Client
             this.components = new System.ComponentModel.Container();
             this.SuspendLayout();
             InitializeGameWindow(player);
-            InitializeLabel();
+            InitializeGameStartLabel();
+            InitializeGameEndLabel();
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameWindow_KeyDown);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.GameWindow_Paint);
             this.ResumeLayout(false);
@@ -145,7 +179,7 @@ namespace Tank2021Client
             this.Text = player.ToString();
         }
 
-        private void InitializeLabel()
+        private void InitializeGameStartLabel()
         {
             this.gameStartLabel = new System.Windows.Forms.Label();
             this.gameStartLabel.AutoSize = false;
@@ -158,6 +192,21 @@ namespace Tank2021Client
             this.gameStartLabel.TextAlign = ContentAlignment.MiddleCenter;
             this.gameStartLabel.Dock = DockStyle.Fill;
             this.Controls.Add(this.gameStartLabel);
+        }
+
+        private void InitializeGameEndLabel()
+        {
+            this.gameEndLabel = new System.Windows.Forms.Label();
+            this.gameEndLabel.AutoSize = false;
+            this.gameEndLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.gameEndLabel.Location = new System.Drawing.Point(61, 105);
+            this.gameEndLabel.Name = "gameStartLabel";
+            this.gameEndLabel.Size = new System.Drawing.Size(153, 20);
+            this.gameEndLabel.TabIndex = 0;
+            this.gameEndLabel.TextAlign = ContentAlignment.MiddleCenter;
+            this.gameEndLabel.Dock = DockStyle.Fill;
+            this.gameEndLabel.Visible = false;
+            this.Controls.Add(this.gameEndLabel);
         }
     }
 }

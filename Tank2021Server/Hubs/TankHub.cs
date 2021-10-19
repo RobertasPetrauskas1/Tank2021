@@ -23,7 +23,7 @@ namespace Tank2021.Hubs
                 var player1 = mapController.Map.GetPlayer(player);
 
                 player1.Coins = 0;
-                player1.Tank = new Tank(new BaseGun(), new Point(30, 26), 5, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/tank.png");
+                player1.Tank = new Tank(new BaseGun(), new Point(30, 26), 5, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/tank.png", 100);
             }
 
             if(player == PlayerType.PLAYER2)
@@ -31,10 +31,10 @@ namespace Tank2021.Hubs
                 var player2 = mapController.Map.GetPlayer(player);
 
                 player2.Coins = 0;
-                player2.Tank = new Tank(new BaseGun(), new Point(800, 26), 5, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/tank.png");
+                player2.Tank = new Tank(new BaseGun(), new Point(800, 26), 5, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/tank.png", 100);
             }
 
-            await Clients.All.SendAsync("UpdateMap", mapController.Map.ToJson());
+            await Clients.All.SendAsync("InitializeGame", mapController.Map.ToJson());
         }
 
         public async Task MoveDown(PlayerType player)

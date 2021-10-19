@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Drawing;
+using System.Threading.Tasks;
 using System.Timers;
 using Tank2021.Hubs;
 using Tank2021SharedContent;
@@ -22,43 +24,108 @@ namespace Tank2021Server
             timer.Enabled = true;
             timer.Start();
 
-            AddMapSend();
-            AddBulletMovement();
+            AddGameCycle();
         }
-        private void AddMapSend()
+
+        private void AddGameCycle()
         {
             timer.Elapsed += async (Object source, ElapsedEventArgs e) =>
             {
-                await hubContext.Clients.All.SendAsync("UpdateMap", Map.ToJson());
+                var mapController = MapControllerSingleton.getMapController();
+
+                var player1Tank = mapController.Map.GetPlayer(PlayerType.PLAYER1)?.Tank;
+                var player2Tank = mapController.Map.GetPlayer(PlayerType.PLAYER2)?.Tank;
+
+                var player1Gun = player1Tank?.Gun;
+                var player2Gun = player2Tank?.Gun;
+
+                if (await IsGameOver(player1Tank, player2Tank))
+                {
+                    timer.Enabled = false;
+                    ResetGame();
+                }
+                else
+                {
+                    UpdateBulletMovement(player1Gun, player2Tank);
+                    UpdateBulletMovement(player2Gun, player1Tank);
+                    await hubContext.Clients.All.SendAsync("UpdateMap", Map.ToJson());
+                }
             };
         }
 
-        private void AddBulletMovement()
+        private async Task<bool> IsGameOver(Tank player1Tank, Tank player2Tank)
         {
-            timer.Elapsed += (Object source, ElapsedEventArgs e) =>
+            if(player1Tank == null || player2Tank == null)
             {
-                var mapController = MapControllerSingleton.getMapController();
+                return false;
+            }
+            else if (IsTankDead(player1Tank))
+            {
+                await hubContext.Clients.All.SendAsync("GameOver", PlayerType.PLAYER1);
+                return true;
+            }
+            else if (IsTankDead(player2Tank))
+            {
+                await hubContext.Clients.All.SendAsync("GameOver", PlayerType.PLAYER2);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
-                var player1Gun = mapController.Map.GetPlayer(PlayerType.PLAYER1)?.Tank?.Gun;
-                if(player1Gun != null)
-                    for(var index = player1Gun.Bullets.Count - 1; index > -1; index--)
-                    {
-                        if (player1Gun.Bullets[index].MarkForDelete)
-                            player1Gun.Bullets.RemoveAt(index);
-                        else
-                            player1Gun.Bullets[index].Move();
-                    }
+        private void ResetGame()
+        {
+            Map = new Map();
+        }
 
-                var player2Gun = mapController.Map.GetPlayer(PlayerType.PLAYER2)?.Tank?.Gun;
-                if(player2Gun != null)
-                    for (var index = player2Gun.Bullets.Count - 1; index > -1; index--)
+        private bool IsTankDead(Tank tank)
+        {
+            if (tank.Health <= 0)
+                return true;
+
+            return false;
+        }
+
+        private void UpdateBulletMovement(Gun gun, Tank tank)
+        {
+            if (gun != null)
+                for (var index = gun.Bullets.Count - 1; index > -1; index--)
+                {
+                    if (IsHittingTank(tank, gun.Bullets[index]))
                     {
-                        if (player2Gun.Bullets[index].MarkForDelete)
-                            player2Gun.Bullets.RemoveAt(index);
-                        else
-                            player2Gun.Bullets[index].Move();
+                        tank.GetHit(gun.Bullets[index].Damage);
+                        gun.Bullets.RemoveAt(index);
                     }
-            };
+                    else if (gun.Bullets[index].MarkForDelete)
+                    {
+                        gun.Bullets.RemoveAt(index);
+                    }
+                    else
+                    {
+                        gun.Bullets[index].Move();
+                    }
+                }
+        }
+
+        private bool IsHittingTank(Tank tank, Bullet bullet)
+        {
+            if (tank != null)
+            {
+                var bulletRectangle = new Rectangle(bullet.Coordinates,
+                    Helper.GetBulletSize(bullet));
+
+                var tankRectangle = new Rectangle(tank.Coordinates,
+                    Helper.GetTankSize(tank));
+
+                if (tankRectangle.IntersectsWith(bulletRectangle))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
