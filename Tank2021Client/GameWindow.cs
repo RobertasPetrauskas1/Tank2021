@@ -24,7 +24,7 @@ namespace Tank2021Client
         PlayerType playerType;
         IList<Figure> figures;
         bool initialized = false;
-        bool gameIsNotStarted = true;
+        bool gameStarted = false;
         public GameWindow(PlayerType player)
         {
             playerType = player;
@@ -65,14 +65,17 @@ namespace Tank2021Client
         public void GameOver(PlayerType player)
         {
             _hubConnection.Remove("UpdateMap");
-            gameIsNotStarted = true;
+            gameStarted = false;
             this.gameEndLabel.Text = $"{player} WON, press ENTER to play again";
             this.gameEndLabel.Visible = true;
             initialized = false;
+            figures = new List<Figure>();
         }
 
         public void InitializeMap(Map map)
         {
+            this.gameStartLabel.Visible = false;
+            this.gameStarted = true;
             _hubConnection.On<string>("UpdateMap", (updatedMap) =>
             {
                 var map = JsonConvert.DeserializeObject<Map>(updatedMap, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
@@ -120,30 +123,30 @@ namespace Tank2021Client
                 case Keys.Enter:
                     if (!initialized)
                     {
-                        await _hubConnection.SendAsync("InitializeGame", playerType);
-                        this.gameStartLabel.Visible = false;
+                        await _hubConnection.SendAsync("ConnectPlayer", playerType);
+                        this.gameStartLabel.Text = $"{playerType} connected succesfully. Waiting for other player.";
                         this.gameEndLabel.Visible = false;
-                        gameIsNotStarted = false;
+                        this.gameStartLabel.Visible = true;
                     }
                     break;
                 case Keys.Up:
-                    if (!gameIsNotStarted)
+                    if (gameStarted)
                         await _hubConnection.SendAsync("MoveUp", playerType);
                     break;
                 case Keys.Down:
-                    if (!gameIsNotStarted)
+                    if (gameStarted)
                         await _hubConnection.SendAsync("MoveDown", playerType);
                     break;
                 case Keys.Left:
-                    if (!gameIsNotStarted)
+                    if (gameStarted)
                         await _hubConnection.SendAsync("MoveLeft", playerType);
                     break;
                 case Keys.Right:
-                    if (!gameIsNotStarted)
+                    if (gameStarted)
                         await _hubConnection.SendAsync("MoveRight", playerType);
                     break;
                 case Keys.Space:
-                    if (!gameIsNotStarted)
+                    if (gameStarted)
                         await _hubConnection.SendAsync("Shoot", playerType);
                     break;
             }

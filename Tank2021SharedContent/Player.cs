@@ -6,6 +6,7 @@ namespace Tank2021SharedContent
 {
     public class Player
     {
+        public bool IsConnected;
         public int Coins;
         public Tank Tank;
     }

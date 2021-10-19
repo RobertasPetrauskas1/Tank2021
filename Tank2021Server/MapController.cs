@@ -21,7 +21,7 @@ namespace Tank2021Server
             Map = new Map();
             this.hubContext = hubContext;
             timer.Interval = timerSpeed;
-            timer.Enabled = true;
+            timer.Enabled = false;
             timer.Start();
 
             AddGameCycle();
@@ -41,7 +41,6 @@ namespace Tank2021Server
 
                 if (await IsGameOver(player1Tank, player2Tank))
                 {
-                    timer.Enabled = false;
                     ResetGame();
                 }
                 else
@@ -77,6 +76,7 @@ namespace Tank2021Server
 
         private void ResetGame()
         {
+            timer.Enabled = false;
             Map = new Map();
         }
 

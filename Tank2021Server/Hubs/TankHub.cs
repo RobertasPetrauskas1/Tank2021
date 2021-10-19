@@ -14,11 +14,29 @@ namespace Tank2021.Hubs
 {
     public class TankHub : Hub
     {
-        public async Task InitializeGame(PlayerType player)
+        public async Task ConnectPlayer(PlayerType player)
+        {
+            var mapController = MapControllerSingleton.getMapController();
+            mapController.Map.GetPlayer(player).IsConnected = true;
+            InitializePlayer(player);
+            if (mapController.Map.GetOppositePlayer(player).IsConnected)
+            {
+                await InitializeGame();
+            } 
+        }
+
+        public async Task DisconnectPlayer(PlayerType player)
+        {
+            //TODO: add logic needed for reeseting game, putting active player in lobby and freeing up slot for new player
+            var mapController = MapControllerSingleton.getMapController();
+            mapController.Map.GetPlayer(player).IsConnected = false;
+        }
+
+        public void InitializePlayer(PlayerType player)
         {
             var mapController = MapControllerSingleton.getMapController();
 
-            if(player == PlayerType.PLAYER1)
+            if (player == PlayerType.PLAYER1)
             {
                 var player1 = mapController.Map.GetPlayer(player);
 
@@ -26,14 +44,19 @@ namespace Tank2021.Hubs
                 player1.Tank = new Tank(new BaseGun(), new Point(30, 26), 5, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/tank.png", 100);
             }
 
-            if(player == PlayerType.PLAYER2)
+            if (player == PlayerType.PLAYER2)
             {
                 var player2 = mapController.Map.GetPlayer(player);
 
                 player2.Coins = 0;
                 player2.Tank = new Tank(new BaseGun(), new Point(800, 26), 5, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/tank.png", 100);
             }
+        }
 
+        public async Task InitializeGame()
+        {
+            var mapController = MapControllerSingleton.getMapController();
+            mapController.timer.Enabled = true;
             await Clients.All.SendAsync("InitializeGame", mapController.Map.ToJson());
         }
 
