@@ -16,16 +16,18 @@ namespace Tank2021Client
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var firstPlayerGameWindow = new GameWindow(PlayerType.PLAYER1);
-            firstPlayerGameWindow.Show();
             this.Hide();
+            var firstPlayerGameWindow = new GameWindow(PlayerType.PLAYER1);
+            firstPlayerGameWindow.ShowDialog();
+            this.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            var secondPlayerGameWindow = new GameWindow(PlayerType.PLAYER2);
-            secondPlayerGameWindow.Show();
             this.Hide();
+            var secondPlayerGameWindow = new GameWindow(PlayerType.PLAYER2);
+            secondPlayerGameWindow.ShowDialog();
+            this.Close();
         }
 
         private void MainWindow_Load(object sender, EventArgs e)

@@ -76,6 +76,7 @@ namespace Tank2021Client
         {
             this.gameStartLabel.Visible = false;
             this.gameStarted = true;
+            SetBackground(map.BackgroundImageLocation);
             _hubConnection.On<string>("UpdateMap", (updatedMap) =>
             {
                 var map = JsonConvert.DeserializeObject<Map>(updatedMap, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
@@ -93,6 +94,12 @@ namespace Tank2021Client
             UpdateBullets(map.GetPlayer(PlayerType.PLAYER1).Tank?.Gun?.Bullets);
             UpdateBullets(map.GetPlayer(PlayerType.PLAYER2).Tank?.Gun?.Bullets);
             Invalidate();
+        }
+
+        private void SetBackground(string ImageLocation)
+        {
+            if (!string.IsNullOrWhiteSpace(ImageLocation))
+                this.BackgroundImage = Image.FromFile(ImageLocation);
         }
 
         private void UpdateTank(Tank tank)
@@ -168,6 +175,7 @@ namespace Tank2021Client
             InitializeGameEndLabel();
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameWindow_KeyDown);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.GameWindow_Paint);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.GameWindow_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
@@ -210,6 +218,12 @@ namespace Tank2021Client
             this.gameEndLabel.Dock = DockStyle.Fill;
             this.gameEndLabel.Visible = false;
             this.Controls.Add(this.gameEndLabel);
+        }
+
+        private async void GameWindow_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            await _hubConnection.SendAsync("DisconnectPlayer", playerType);
+            this.Close();
         }
     }
 }

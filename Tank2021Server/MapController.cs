@@ -74,7 +74,7 @@ namespace Tank2021Server
             }
         }
 
-        private void ResetGame()
+        public void ResetGame()
         {
             timer.Enabled = false;
             Map = new Map();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using Tank2021SharedContent.Constants;
+using Tank2021SharedContent.Enums;
 
 namespace Tank2021SharedContent
 {
@@ -19,6 +20,19 @@ namespace Tank2021SharedContent
 
                 default:
                     throw new ArgumentException($"Could not generate bullet location, unknown Rotation type - {tank.Rotation}");
+            }
+        }
+
+        public static PlayerType GetOppositePlayer(PlayerType player)
+        {
+            switch (player)
+            {
+                case PlayerType.PLAYER1:
+                    return PlayerType.PLAYER2;
+                case PlayerType.PLAYER2:
+                    return PlayerType.PLAYER1;
+                default:
+                    throw new ArgumentException($"No such player type - {player}");
             }
         }
 

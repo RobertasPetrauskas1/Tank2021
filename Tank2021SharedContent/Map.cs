@@ -10,6 +10,7 @@ namespace Tank2021SharedContent
     {
         public Player player1;
         public Player player2;
+        public string BackgroundImageLocation;
 
         public Map()
         {

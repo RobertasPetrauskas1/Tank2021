@@ -27,9 +27,20 @@ namespace Tank2021.Hubs
 
         public async Task DisconnectPlayer(PlayerType player)
         {
-            //TODO: add logic needed for reeseting game, putting active player in lobby and freeing up slot for new player
             var mapController = MapControllerSingleton.getMapController();
-            mapController.Map.GetPlayer(player).IsConnected = false;
+            mapController.Map.GetPlayer(player).IsConnected = false; //Do we really need this?
+            mapController.ResetGame();
+
+            await Clients.All.SendAsync("GameOver", Helper.GetOppositePlayer(player));
+        }
+
+
+        public async Task InitializeGame()
+        {
+            var mapController = MapControllerSingleton.getMapController();
+            mapController.timer.Enabled = true;
+            mapController.Map.BackgroundImageLocation = @"../../../Properties/Resources/background.png";
+            await Clients.All.SendAsync("InitializeGame", mapController.Map.ToJson());
         }
 
         public void InitializePlayer(PlayerType player)
@@ -49,15 +60,8 @@ namespace Tank2021.Hubs
                 var player2 = mapController.Map.GetPlayer(player);
 
                 player2.Coins = 0;
-                player2.Tank = new Tank(new BaseGun(), new Point(800, 26), 5, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/tank.png", 100);
+                player2.Tank = new Tank(new BaseGun(), new Point(900, 26), 5, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/tank.png", 100);
             }
-        }
-
-        public async Task InitializeGame()
-        {
-            var mapController = MapControllerSingleton.getMapController();
-            mapController.timer.Enabled = true;
-            await Clients.All.SendAsync("InitializeGame", mapController.Map.ToJson());
         }
 
         public async Task MoveDown(PlayerType player)
