@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tank2021", "Tank2021\Tank2021.csproj", "{5913F673-F2E0-45BD-81A9-6F99F22E7534}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tank2021Client", "Tank2021Client\Tank2021Client.csproj", "{22159A14-8D5C-4F5B-93FC-FE0C17BD263E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{84F24C5E-5ED8-48FB-8197-C89FE1FC1895} = {84F24C5E-5ED8-48FB-8197-C89FE1FC1895}
@@ -20,10 +18,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5913F673-F2E0-45BD-81A9-6F99F22E7534}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5913F673-F2E0-45BD-81A9-6F99F22E7534}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5913F673-F2E0-45BD-81A9-6F99F22E7534}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5913F673-F2E0-45BD-81A9-6F99F22E7534}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22159A14-8D5C-4F5B-93FC-FE0C17BD263E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{22159A14-8D5C-4F5B-93FC-FE0C17BD263E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22159A14-8D5C-4F5B-93FC-FE0C17BD263E}.Release|Any CPU.ActiveCfg = Release|Any CPU
