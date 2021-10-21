@@ -69,6 +69,7 @@ namespace Tank2021Client
             EnableTankSelection(true);
             this.gameEndLabel.Text = $"{player} WON";
             this.gameEndLabel.Visible = true;
+            this.BackgroundImage = null;
             initialized = false;
             figures = new List<Figure>();
         }
@@ -210,14 +211,12 @@ namespace Tank2021Client
         private void InitializeGameEndLabel()
         {
             this.gameEndLabel = new System.Windows.Forms.Label();
-            this.gameEndLabel.AutoSize = false;
+            this.gameEndLabel.AutoSize = true;
             this.gameEndLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.gameEndLabel.Location = new System.Drawing.Point(417, 350);
+            this.gameEndLabel.Location = new System.Drawing.Point(440, 350);
             this.gameEndLabel.Name = "gameStartLabel";
             this.gameEndLabel.Size = new System.Drawing.Size(250, 20);
             this.gameEndLabel.TabIndex = 0;
-            this.gameEndLabel.TextAlign = ContentAlignment.MiddleCenter;
-            //this.gameEndLabel.Dock = DockStyle.Fill;
             this.gameEndLabel.Visible = false;
             this.Controls.Add(this.gameEndLabel);
         }
