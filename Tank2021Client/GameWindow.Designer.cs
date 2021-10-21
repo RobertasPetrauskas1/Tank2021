@@ -70,5 +70,9 @@ namespace Tank2021Client
         private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Label gameStartLabel;
         private System.Windows.Forms.Label gameEndLabel;
+        private System.Windows.Forms.Label ChooseTankLabel;
+        private System.Windows.Forms.Button LightTankButton;
+        private System.Windows.Forms.Button MediumTankButton;
+        private System.Windows.Forms.Button HeavyTankButton;
     }
 }

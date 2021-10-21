@@ -66,7 +66,8 @@ namespace Tank2021Client
         {
             _hubConnection.Remove("UpdateMap");
             gameStarted = false;
-            this.gameEndLabel.Text = $"{player} WON, press ENTER to play again";
+            EnableTankSelection(true);
+            this.gameEndLabel.Text = $"{player} WON";
             this.gameEndLabel.Visible = true;
             initialized = false;
             figures = new List<Figure>();
@@ -127,15 +128,15 @@ namespace Tank2021Client
         {
             switch(e.KeyCode)
             {
-                case Keys.Enter:
-                    if (!initialized)
-                    {
-                        await _hubConnection.SendAsync("ConnectPlayer", playerType);
-                        this.gameStartLabel.Text = $"{playerType} connected succesfully. Waiting for other player.";
-                        this.gameEndLabel.Visible = false;
-                        this.gameStartLabel.Visible = true;
-                    }
-                    break;
+                //case Keys.Enter:
+                //    if (!initialized)
+                //    {
+                //        await _hubConnection.SendAsync("ConnectPlayer", playerType);
+                //        this.gameStartLabel.Text = $"{playerType} connected succesfully. Waiting for other player.";
+                //        this.gameEndLabel.Visible = false;
+                //        this.gameStartLabel.Visible = true;
+                //    }
+                //    break;
                 case Keys.Up:
                     if (gameStarted)
                         await _hubConnection.SendAsync("MoveUp", playerType);
@@ -171,6 +172,7 @@ namespace Tank2021Client
             this.components = new System.ComponentModel.Container();
             this.SuspendLayout();
             InitializeGameWindow(player);
+            InitializeTankSelection();
             InitializeGameStartLabel();
             InitializeGameEndLabel();
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameWindow_KeyDown);
@@ -199,9 +201,9 @@ namespace Tank2021Client
             this.gameStartLabel.Name = "gameStartLabel";
             this.gameStartLabel.Size = new System.Drawing.Size(153, 20);
             this.gameStartLabel.TabIndex = 0;
-            this.gameStartLabel.Text = "press ENTER to start";
             this.gameStartLabel.TextAlign = ContentAlignment.MiddleCenter;
             this.gameStartLabel.Dock = DockStyle.Fill;
+            this.gameStartLabel.Visible = false;
             this.Controls.Add(this.gameStartLabel);
         }
 
@@ -210,12 +212,12 @@ namespace Tank2021Client
             this.gameEndLabel = new System.Windows.Forms.Label();
             this.gameEndLabel.AutoSize = false;
             this.gameEndLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.gameEndLabel.Location = new System.Drawing.Point(61, 105);
+            this.gameEndLabel.Location = new System.Drawing.Point(417, 350);
             this.gameEndLabel.Name = "gameStartLabel";
-            this.gameEndLabel.Size = new System.Drawing.Size(153, 20);
+            this.gameEndLabel.Size = new System.Drawing.Size(250, 20);
             this.gameEndLabel.TabIndex = 0;
             this.gameEndLabel.TextAlign = ContentAlignment.MiddleCenter;
-            this.gameEndLabel.Dock = DockStyle.Fill;
+            //this.gameEndLabel.Dock = DockStyle.Fill;
             this.gameEndLabel.Visible = false;
             this.Controls.Add(this.gameEndLabel);
         }
@@ -224,6 +226,88 @@ namespace Tank2021Client
         {
             await _hubConnection.SendAsync("DisconnectPlayer", playerType);
             this.Close();
+        }
+
+        private void InitializeTankSelection()
+        {
+            this.ChooseTankLabel = new System.Windows.Forms.Label();
+            this.LightTankButton = new System.Windows.Forms.Button();
+            this.MediumTankButton = new System.Windows.Forms.Button();
+            this.HeavyTankButton = new System.Windows.Forms.Button();
+            
+            this.ChooseTankLabel.AutoSize = true;
+            this.ChooseTankLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.ChooseTankLabel.Location = new System.Drawing.Point(417, 45);
+            this.ChooseTankLabel.Name = "ChooseTankLabel";
+            this.ChooseTankLabel.Size = new System.Drawing.Size(138, 20);
+            this.ChooseTankLabel.TabIndex = 0;
+            this.ChooseTankLabel.Text = "Choose Tank Type:";
+            
+            this.LightTankButton.Location = new System.Drawing.Point(417, 109);
+            this.LightTankButton.Name = "LightTankButton";
+            this.LightTankButton.Size = new System.Drawing.Size(138, 32);
+            this.LightTankButton.TabIndex = 1;
+            this.LightTankButton.Text = "Light Tank";
+            this.LightTankButton.UseVisualStyleBackColor = true;
+            this.LightTankButton.Click += TankSelectionClick;
+
+            this.MediumTankButton.Location = new System.Drawing.Point(417, 186);
+            this.MediumTankButton.Name = "MediumTankButton";
+            this.MediumTankButton.Size = new System.Drawing.Size(138, 32);
+            this.MediumTankButton.TabIndex = 2;
+            this.MediumTankButton.Text = "Medium Tank";
+            this.MediumTankButton.UseVisualStyleBackColor = true;
+            this.MediumTankButton.Click += TankSelectionClick;
+
+            this.HeavyTankButton.Location = new System.Drawing.Point(417, 261);
+            this.HeavyTankButton.Name = "HeavyTankButton";
+            this.HeavyTankButton.Size = new System.Drawing.Size(138, 32);
+            this.HeavyTankButton.TabIndex = 3;
+            this.HeavyTankButton.Text = "Heavy Tank";
+            this.HeavyTankButton.UseVisualStyleBackColor = true;
+            this.HeavyTankButton.Click += TankSelectionClick;
+
+            this.Controls.Add(this.HeavyTankButton);
+            this.Controls.Add(this.MediumTankButton);
+            this.Controls.Add(this.LightTankButton);
+            this.Controls.Add(this.ChooseTankLabel);
+        }
+
+        private async void TankSelectionClick(object sender, EventArgs e)
+        {
+            var button = (Button)sender;
+            switch (button.Name)
+            {
+                case "LightTankButton":
+                    await InitializeGame();
+                    break;
+                case "MediumTankButton":
+                    await InitializeGame();
+                    break;
+                case "HeavyTankButton":
+                    await InitializeGame();
+                    break;
+                default:
+                    throw new ArgumentException($"No such button exists -> {button.Name}");
+            }
+
+            EnableTankSelection(false);
+        }
+
+        private void EnableTankSelection(bool enabled)
+        {
+            this.ChooseTankLabel.Visible = enabled;
+            this.LightTankButton.Visible = enabled;
+            this.MediumTankButton.Visible = enabled;
+            this.HeavyTankButton.Visible = enabled;
+        }
+
+        private async Task InitializeGame()
+        {
+            await _hubConnection.SendAsync("ConnectPlayer", playerType);
+            this.gameStartLabel.Text = $"{playerType} connected succesfully. Waiting for other player.";
+            this.gameEndLabel.Visible = false;
+            this.gameStartLabel.Visible = true;
         }
     }
 }

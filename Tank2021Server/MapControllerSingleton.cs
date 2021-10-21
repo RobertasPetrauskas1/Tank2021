@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Tank2021Server
+﻿namespace Tank2021Server
 {
     public static class MapControllerSingleton
     {
