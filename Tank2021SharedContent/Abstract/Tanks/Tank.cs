@@ -1,37 +1,42 @@
 ﻿using System;
 using System.Drawing;
 using Tank2021SharedContent.Abstract;
+using Tank2021SharedContent.Abstract.Armors;
+using Tank2021SharedContent.Abstract.Guns;
+using Tank2021SharedContent.AbstractFactories;
 using Tank2021SharedContent.Constants;
 
-namespace Tank2021SharedContent
+namespace Tank2021SharedContent.Abstract.Tanks
 {
-    public class Tank
+    public abstract class Tank
     {
-        #region Robkes stuff
-        public int Hitpoints { get; set; }
-        public Gun Gun { get; set; }
-        public Armor Armor { get; set; }
-        #endregion
+        public abstract Gun Gun { get; set; }
+        public abstract Armor Armor { get; set; }
+        public abstract int Health { get; set; }
+        public abstract int Speed { get; set; }
+        public abstract string ImageLocation { get; set; }
 
+        public RotateFlipType Rotation { get; set; }
         public Point Coordinates;
-        public int Speed;
-        public RotateFlipType Rotation;
-        public string ImageLocation;
-        public int Health;
 
-        public Tank(Gun gun, Point coordinates, int speed, RotateFlipType rotation, string imageLocation, int health)
+        public Tank(Point coordinates, RotateFlipType rotation)
         {
-            Gun = gun;
             Coordinates = coordinates;
-            Speed = speed;
             Rotation = rotation;
-            ImageLocation = imageLocation;
-            Health = health;
         }
+
+        public abstract AbstractFactory GetAbstractFactory();
 
         public void GetHit(int damage)
         {
-            Health -= damage;
+            var currentDamage = damage;
+            if(Armor.HitsLeft > 0)
+            {
+                currentDamage = Armor.DamageReduction >= damage ? 0 : damage - Armor.DamageReduction;
+                Armor.HitsLeft--;
+            }
+
+            Health -= currentDamage;
         }
 
         public bool IsHittingBorder(int width, int height)

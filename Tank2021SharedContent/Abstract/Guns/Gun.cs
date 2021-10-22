@@ -4,17 +4,18 @@ using System.Drawing;
 using System.Text;
 using Tank2021SharedContent.Constants;
 
-namespace Tank2021SharedContent
+namespace Tank2021SharedContent.Abstract.Guns
 {
-    public abstract class Gun
+    public abstract class Gun : IUnit
     {
-        public TimeSpan Cooldown;
-        public int Damage;
-        public int Speed;
-        public List<Bullet> Bullets = new List<Bullet>();
+        public abstract TimeSpan Cooldown { get; set; }
+        public abstract int Damage { get; set; }
+        public abstract int Speed { get; set; }
 
+        public List<Bullet> Bullets = new List<Bullet>();
         public DateTime NextShootTime = DateTime.Now;
-        public void Shoot(Point currentCoordinates, RotateFlipType flipType)
+
+        public virtual void Shoot(Point currentCoordinates, RotateFlipType flipType)
         {
             if(DateTime.Now >= NextShootTime)
             {

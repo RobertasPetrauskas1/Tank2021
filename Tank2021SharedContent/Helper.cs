@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Drawing;
+using Tank2021SharedContent.Abstract.Guns;
+using Tank2021SharedContent.Abstract.Tanks;
 using Tank2021SharedContent.Constants;
 using Tank2021SharedContent.Enums;
 

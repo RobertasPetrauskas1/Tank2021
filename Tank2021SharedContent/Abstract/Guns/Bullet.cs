@@ -4,18 +4,18 @@ using System.Drawing;
 using System.Text;
 using Tank2021SharedContent.Constants;
 
-namespace Tank2021SharedContent
+namespace Tank2021SharedContent.Abstract.Guns
 {
     public class Bullet
     {
-        public int Damage;
-        public Direction FlightDirection;
-        public bool MarkForDelete = false;
+        public int Damage { get; set; }
+        public Direction FlightDirection { get; set; }
+        public int Speed { get; set; }
+        public RotateFlipType Rotation { get; set; }
+        public string ImageLocation { get; set; }
 
         public Point Coordinates;
-        public int Speed;
-        public RotateFlipType Rotation;
-        public string ImageLocation;
+        public bool MarkForDelete = false;
 
         public Bullet(int damage, Direction direction, Point coordinates, int speed, RotateFlipType rotation)
         {

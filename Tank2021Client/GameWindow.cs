@@ -1,17 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tank2021SharedContent;
+using Tank2021SharedContent.Abstract.Guns;
+using Tank2021SharedContent.Abstract.Tanks;
 using Tank2021SharedContent.Constants;
 using Tank2021SharedContent.Enums;
 
@@ -23,7 +20,6 @@ namespace Tank2021Client
         private HubConnection _hubConnection;
         PlayerType playerType;
         IList<Figure> figures;
-        bool initialized = false;
         bool gameStarted = false;
         public GameWindow(PlayerType player)
         {
@@ -67,10 +63,9 @@ namespace Tank2021Client
             _hubConnection.Remove("UpdateMap");
             gameStarted = false;
             EnableTankSelection(true);
-            this.gameEndLabel.Text = $"{player} WON";
+            this.gameEndLabel.Text = $"{player} WON!!!";
             this.gameEndLabel.Visible = true;
             this.BackgroundImage = null;
-            initialized = false;
             figures = new List<Figure>();
         }
 
@@ -78,6 +73,8 @@ namespace Tank2021Client
         {
             this.gameStartLabel.Visible = false;
             this.gameStarted = true;
+            this.player1Score.Visible = true;
+            this.player2Score.Visible = true;
             SetBackground(map.BackgroundImageLocation);
             _hubConnection.On<string>("UpdateMap", (updatedMap) =>
             {
@@ -91,11 +88,30 @@ namespace Tank2021Client
         public void UpdateMap(Map map)
         {
             figures = new List<Figure>();
-            UpdateTank(map.GetPlayer(PlayerType.PLAYER1).Tank);
-            UpdateTank(map.GetPlayer(PlayerType.PLAYER2).Tank);
-            UpdateBullets(map.GetPlayer(PlayerType.PLAYER1).Tank?.Gun?.Bullets);
-            UpdateBullets(map.GetPlayer(PlayerType.PLAYER2).Tank?.Gun?.Bullets);
+            var player1Tank = map.GetPlayer(PlayerType.PLAYER1).Tank;
+            var player2Tank = map.GetPlayer(PlayerType.PLAYER2).Tank;
+
+            UpdateTank(player1Tank);
+            UpdateTank(player2Tank);
+            UpdateBullets(player1Tank?.Gun?.Bullets);
+            UpdateBullets(player2Tank?.Gun?.Bullets);
+            UpdateScores(player1Tank, player2Tank);
             Invalidate();
+        }
+
+        private void UpdateScores(Tank player1Tank, Tank player2Tank)
+        {
+            var player1ArmorHits = player1Tank?.Armor?.HitsLeft;
+            var player1Health = player1Tank?.Health;
+
+            var player2ArmorHits = player2Tank?.Armor?.HitsLeft;
+            var player2Health = player2Tank?.Health;
+
+            this.player1Score.Text = $"{PlayerType.PLAYER1}\nArmorHits: {(player1ArmorHits != null ? player1ArmorHits : "UNKNOWN")}\nTankHealth: {(player1Health != null ? player1Health : "UNKNOWN")}";
+            this.player1Score.Size = new Size(150, 150);
+
+            this.player2Score.Text = $"{PlayerType.PLAYER2}\nArmorHits: {(player2ArmorHits != null ? player2ArmorHits : "UNKNOWN")}\nTankHealth: {(player2Health != null ? player2Health : "UNKNOWN")}";
+            this.player2Score.Size = new Size(150, 150);
         }
 
         private void SetBackground(string ImageLocation)
@@ -129,15 +145,6 @@ namespace Tank2021Client
         {
             switch(e.KeyCode)
             {
-                //case Keys.Enter:
-                //    if (!initialized)
-                //    {
-                //        await _hubConnection.SendAsync("ConnectPlayer", playerType);
-                //        this.gameStartLabel.Text = $"{playerType} connected succesfully. Waiting for other player.";
-                //        this.gameEndLabel.Visible = false;
-                //        this.gameStartLabel.Visible = true;
-                //    }
-                //    break;
                 case Keys.Up:
                     if (gameStarted)
                         await _hubConnection.SendAsync("MoveUp", playerType);
@@ -176,6 +183,7 @@ namespace Tank2021Client
             InitializeTankSelection();
             InitializeGameStartLabel();
             InitializeGameEndLabel();
+            InitializeScores();
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GameWindow_KeyDown);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.GameWindow_Paint);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.GameWindow_FormClosed);
@@ -213,7 +221,7 @@ namespace Tank2021Client
             this.gameEndLabel = new System.Windows.Forms.Label();
             this.gameEndLabel.AutoSize = true;
             this.gameEndLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.gameEndLabel.Location = new System.Drawing.Point(440, 350);
+            this.gameEndLabel.Location = new System.Drawing.Point(420, 350);
             this.gameEndLabel.Name = "gameStartLabel";
             this.gameEndLabel.Size = new System.Drawing.Size(250, 20);
             this.gameEndLabel.TabIndex = 0;
@@ -278,13 +286,13 @@ namespace Tank2021Client
             switch (button.Name)
             {
                 case "LightTankButton":
-                    await InitializeGame();
+                    await InitializeGame(TankType.LightTank);
                     break;
                 case "MediumTankButton":
-                    await InitializeGame();
+                    await InitializeGame(TankType.MediumTank);
                     break;
                 case "HeavyTankButton":
-                    await InitializeGame();
+                    await InitializeGame(TankType.HeavyTank);
                     break;
                 default:
                     throw new ArgumentException($"No such button exists -> {button.Name}");
@@ -301,12 +309,39 @@ namespace Tank2021Client
             this.HeavyTankButton.Visible = enabled;
         }
 
-        private async Task InitializeGame()
+        private async Task InitializeGame(TankType tank)
         {
-            await _hubConnection.SendAsync("ConnectPlayer", playerType);
+            await _hubConnection.SendAsync("ConnectPlayer", playerType, tank);
             this.gameStartLabel.Text = $"{playerType} connected succesfully. Waiting for other player.";
             this.gameEndLabel.Visible = false;
             this.gameStartLabel.Visible = true;
+        }
+
+        private void InitializeScores()
+        {
+            this.player1Score = new System.Windows.Forms.Label();
+            this.player2Score = new System.Windows.Forms.Label();
+            
+            this.player1Score.AutoSize = true;
+            this.player1Score.BackColor = System.Drawing.Color.Transparent;
+            this.player1Score.Location = new System.Drawing.Point(13, 13);
+            this.player1Score.Name = "player1Score";
+            this.player1Score.Size = new System.Drawing.Size(101, 20);
+            this.player1Score.TabIndex = 0;
+            this.player1Score.Text = "Player1 Score:";
+            this.player1Score.Visible = false;
+            
+            this.player2Score.AutoSize = true;
+            this.player2Score.BackColor = System.Drawing.Color.Transparent;
+            this.player2Score.Location = new System.Drawing.Point(869, 9);
+            this.player2Score.Name = "player2Score";
+            this.player2Score.Size = new System.Drawing.Size(101, 20);
+            this.player2Score.TabIndex = 1;
+            this.player2Score.Text = "Player2 Score:";
+            this.player2Score.Visible = false;
+            
+            this.Controls.Add(this.player2Score);
+            this.Controls.Add(this.player1Score);
         }
     }
 }

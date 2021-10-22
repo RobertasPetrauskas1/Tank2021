@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Timers;
 using Tank2021.Hubs;
 using Tank2021SharedContent;
+using Tank2021SharedContent.Abstract.Guns;
+using Tank2021SharedContent.Abstract.Tanks;
 using Tank2021SharedContent.Enums;
 
 namespace Tank2021Server

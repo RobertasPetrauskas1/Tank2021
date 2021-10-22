@@ -66,13 +66,13 @@ namespace Tank2021Client
 
         #endregion
 
-        private System.Windows.Forms.PictureBox player1Tank;
-        private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Label gameStartLabel;
         private System.Windows.Forms.Label gameEndLabel;
         private System.Windows.Forms.Label ChooseTankLabel;
         private System.Windows.Forms.Button LightTankButton;
         private System.Windows.Forms.Button MediumTankButton;
         private System.Windows.Forms.Button HeavyTankButton;
+        private System.Windows.Forms.Label player1Score;
+        private System.Windows.Forms.Label player2Score;
     }
 }
