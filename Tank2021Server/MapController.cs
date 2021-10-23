@@ -10,6 +10,7 @@ using Tank2021SharedContent.Abstract.Guns;
 using Tank2021SharedContent.Abstract.Tanks;
 using Tank2021SharedContent.Enums;
 using Tank2021SharedContent.Observer.Observers;
+using Tank2021SharedContent.Observer.Subjects;
 using Tank2021SharedContent.Strategy;
 
 namespace Tank2021Server
@@ -17,10 +18,11 @@ namespace Tank2021Server
     public class MapController
     {
         public Map Map { get; set; }
-        IHubContext<TankHub> hubContext;
+        public GameStatus gameStatus;
+        public IHubContext<TankHub> hubContext;
         public Timer timer = new Timer();
         public static double timerSpeed = 30;
-        public IObserver observer;
+        public IObserver gameOverObserver;
 
         public MapController(IHubContext<TankHub> hubContext)
         {
@@ -45,17 +47,21 @@ namespace Tank2021Server
                 var player1Gun = player1Tank?.Gun;
                 var player2Gun = player2Tank?.Gun;
 
-                if (await IsGameOver(player1Tank, player2Tank))
-                {
-                    ResetGame();
-                }
-                else
-                {
-                    UpdateBulletMovement(player1Gun, player2Tank);
-                    UpdateBulletMovement(player2Gun, player1Tank);
-                    ConfigureTankSpeeds(player1Tank, player2Tank);
-                    await hubContext.Clients.All.SendAsync("UpdateMap", Map.ToJson());
-                }
+                //if (await IsGameOver(player1Tank, player2Tank))
+                //{
+                //    ResetGame();
+                //}
+                //else
+                //{
+                //    UpdateBulletMovement(player1Gun, player2Tank);
+                //    UpdateBulletMovement(player2Gun, player1Tank);
+                //    ConfigureTankSpeeds(player1Tank, player2Tank);
+                //    await hubContext.Clients.All.SendAsync("UpdateMap", Map.ToJson());
+                //}
+                UpdateBulletMovement(player1Gun, player2Tank);
+                UpdateBulletMovement(player2Gun, player1Tank);
+                ConfigureTankSpeeds(player1Tank, player2Tank);
+                await hubContext.Clients.All.SendAsync("UpdateMap", Map.ToJson());
             };
         }
 
@@ -125,6 +131,8 @@ namespace Tank2021Server
                     {
                         tank.GetHit(gun.Bullets[index].Damage);
                         gun.Bullets.RemoveAt(index);
+                        gameStatus.UpdateStatus(Map);
+                        gameStatus.NotifyAll();
                     }
                     else if (gun.Bullets[index].MarkForDelete)
                     {
@@ -154,6 +162,18 @@ namespace Tank2021Server
             }
 
             return false;
+        }
+
+        public void InitGameStatus()
+        {
+            var player1Tank = Map.GetPlayer(PlayerType.PLAYER1).Tank;
+            var player2Tank = Map.GetPlayer(PlayerType.PLAYER2).Tank;
+            gameStatus = new GameStatus(new PlayerInfo(player1Tank.Health, player1Tank.MoveAlgorithm), new PlayerInfo(player2Tank.Health, player2Tank.MoveAlgorithm));
+        }
+        public void InitGameoverObservable()
+        {
+            gameOverObserver = new GameOverObserver(gameStatus, hubContext);
+
         }
     }
 }

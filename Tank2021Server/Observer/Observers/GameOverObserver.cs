@@ -21,11 +21,18 @@ namespace Tank2021Server.Observer.Observers
 
         public async Task Update()
         {
-            if(((GameStatus)Subject).Player1Info.TankHealth <= 0)
-                await HubContext.Clients.All.SendAsync("GameOver", PlayerType.PLAYER1);
-            if (((GameStatus)Subject).Player2Info.TankHealth <= 0)
+            if (((GameStatus)Subject).Player1Info.TankHealth <= 0)
+            {
                 await HubContext.Clients.All.SendAsync("GameOver", PlayerType.PLAYER2);
+                MapControllerSingleton.getMapController().ResetGame();
 
+            }
+            if (((GameStatus)Subject).Player2Info.TankHealth <= 0)
+            {
+                await HubContext.Clients.All.SendAsync("GameOver", PlayerType.PLAYER1);
+                MapControllerSingleton.getMapController().ResetGame();
+
+            }
         }
     }
 }
