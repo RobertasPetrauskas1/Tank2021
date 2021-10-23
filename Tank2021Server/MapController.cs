@@ -4,10 +4,12 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Timers;
 using Tank2021.Hubs;
+using Tank2021Server.Observer.Observers;
 using Tank2021SharedContent;
 using Tank2021SharedContent.Abstract.Guns;
 using Tank2021SharedContent.Abstract.Tanks;
 using Tank2021SharedContent.Enums;
+using Tank2021SharedContent.Observer.Observers;
 using Tank2021SharedContent.Strategy;
 
 namespace Tank2021Server
@@ -18,6 +20,7 @@ namespace Tank2021Server
         IHubContext<TankHub> hubContext;
         public Timer timer = new Timer();
         public static double timerSpeed = 30;
+        public IObserver observer;
 
         public MapController(IHubContext<TankHub> hubContext)
         {
