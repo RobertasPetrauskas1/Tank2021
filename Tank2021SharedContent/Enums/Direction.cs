@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Tank2021SharedContent.Constants
+namespace Tank2021SharedContent.Enums
 {
     public enum Direction
     {

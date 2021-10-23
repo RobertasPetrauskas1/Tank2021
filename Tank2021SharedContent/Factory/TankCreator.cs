@@ -6,6 +6,7 @@ using Tank2021SharedContent.Abstract.Guns;
 using Tank2021SharedContent.Abstract.Tanks;
 using Tank2021SharedContent.Constants;
 using Tank2021SharedContent.Enums;
+using Tank2021SharedContent.Strategy;
 
 namespace Tank2021SharedContent.Factory
 {
@@ -19,7 +20,8 @@ namespace Tank2021SharedContent.Factory
             switch (tankType)
             {
                 case TankType.LightTank:
-                    var lightTank = new LightTank(randomLocation, 8, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/light_tank.png", 100);
+                    var lightTank = new LightTank(randomLocation, 8, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/light_tank.png", 
+                        ServerSideConstants.LightTankHealth, new FastMovement());
                     var lightFactory = lightTank.GetAbstractFactory();
 
                     lightTank.Gun = lightFactory.CreateGun();
@@ -28,7 +30,8 @@ namespace Tank2021SharedContent.Factory
                     return lightTank;
 
                 case TankType.MediumTank:
-                    var mediumTank = new MediumTank(randomLocation, 6, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/medium_tank.png", 125);
+                    var mediumTank = new MediumTank(randomLocation, 6, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/medium_tank.png", 
+                        ServerSideConstants.MediumTankHealth, new FastMovement());
                     var mediumFactory = mediumTank.GetAbstractFactory();
 
                     mediumTank.Gun = mediumFactory.CreateGun();
@@ -37,7 +40,8 @@ namespace Tank2021SharedContent.Factory
                     return mediumTank;
 
                 case TankType.HeavyTank:
-                    var heavyTank = new HeavyTank(randomLocation, 4, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/heavy_tank.png", 150);
+                    var heavyTank = new HeavyTank(randomLocation, 4, RotateFlipType.RotateNoneFlipNone, @"../../../Properties/Resources/heavy_tank.png", 
+                        ServerSideConstants.HeavyTankHealth, new FastMovement());
                     var heavyFactory = heavyTank.GetAbstractFactory();
 
                     heavyTank.Gun = heavyFactory.CreateGun();

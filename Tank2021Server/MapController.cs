@@ -8,6 +8,7 @@ using Tank2021SharedContent;
 using Tank2021SharedContent.Abstract.Guns;
 using Tank2021SharedContent.Abstract.Tanks;
 using Tank2021SharedContent.Enums;
+using Tank2021SharedContent.Strategy;
 
 namespace Tank2021Server
 {
@@ -49,9 +50,31 @@ namespace Tank2021Server
                 {
                     UpdateBulletMovement(player1Gun, player2Tank);
                     UpdateBulletMovement(player2Gun, player1Tank);
+                    ConfigureTankSpeeds(player1Tank, player2Tank);
                     await hubContext.Clients.All.SendAsync("UpdateMap", Map.ToJson());
                 }
             };
+        }
+
+        public void ConfigureTankSpeeds(Tank player1Tank, Tank player2Tank)
+        {
+            if(player1Tank != null)
+                AdjustTankSpeed(player1Tank);
+            if(player2Tank != null)
+                AdjustTankSpeed(player2Tank);
+        }
+
+        public void AdjustTankSpeed(Tank tank)
+        {
+            var tankStartingHealth = Helper.GetSpecificTankHp(tank);
+
+            var tankHalfHealth = (int)(tankStartingHealth * 0.5);
+            var tankQuarterHealth = (int)(tankStartingHealth * 0.25);
+
+            if (tank.Health <= tankQuarterHealth)
+                tank.SetMoveAlgorithm(new SlowMovement());
+            else if (tank.Health <= tankHalfHealth)
+                tank.SetMoveAlgorithm(new MediumMovement());
         }
 
         private async Task<bool> IsGameOver(Tank player1Tank, Tank player2Tank)

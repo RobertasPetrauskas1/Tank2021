@@ -38,6 +38,16 @@ namespace Tank2021SharedContent
             }
         }
 
+        public static int GetSpecificTankHp(Tank tank)
+        {
+            if (tank is LightTank)
+                return ServerSideConstants.LightTankHealth;
+            else if (tank is MediumTank)
+                return ServerSideConstants.MediumTankHealth;
+            else
+                return ServerSideConstants.HeavyTankHealth;
+        }
+
         public static Size GetBulletSize(Bullet bullet)
         {
             switch (bullet.Rotation)

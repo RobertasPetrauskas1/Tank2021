@@ -2,6 +2,7 @@
 using Tank2021SharedContent.Abstract.Armors;
 using Tank2021SharedContent.Abstract.Guns;
 using Tank2021SharedContent.AbstractFactories;
+using Tank2021SharedContent.Strategy;
 
 namespace Tank2021SharedContent.Abstract.Tanks
 {
@@ -13,8 +14,8 @@ namespace Tank2021SharedContent.Abstract.Tanks
         public override int Speed { get; set; }
         public override string ImageLocation { get; set; }
 
-        public HeavyTank(Point coordinates, int speed, RotateFlipType rotation, string imageLocation, int health) :
-            base(coordinates, rotation)
+        public HeavyTank(Point coordinates, int speed, RotateFlipType rotation, string imageLocation, int health, MoveAlgorithm moveAlgorithm) :
+            base(coordinates, rotation, moveAlgorithm)
         {
             Speed = speed;
             ImageLocation = imageLocation;

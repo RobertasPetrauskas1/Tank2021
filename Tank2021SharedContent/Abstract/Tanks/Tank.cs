@@ -5,6 +5,8 @@ using Tank2021SharedContent.Abstract.Armors;
 using Tank2021SharedContent.Abstract.Guns;
 using Tank2021SharedContent.AbstractFactories;
 using Tank2021SharedContent.Constants;
+using Tank2021SharedContent.Enums;
+using Tank2021SharedContent.Strategy;
 
 namespace Tank2021SharedContent.Abstract.Tanks
 {
@@ -17,15 +19,41 @@ namespace Tank2021SharedContent.Abstract.Tanks
         public abstract string ImageLocation { get; set; }
 
         public RotateFlipType Rotation { get; set; }
+        public MoveAlgorithm MoveAlgorithm { get; set; }
         public Point Coordinates;
 
-        public Tank(Point coordinates, RotateFlipType rotation)
+        public Tank(Point coordinates, RotateFlipType rotation, MoveAlgorithm moveAlgorithm)
         {
             Coordinates = coordinates;
             Rotation = rotation;
+            MoveAlgorithm = moveAlgorithm;
         }
 
         public abstract AbstractFactory GetAbstractFactory();
+
+        public void SetMoveAlgorithm(MoveAlgorithm moveAlgorithm)
+        {
+            MoveAlgorithm = moveAlgorithm;
+        }
+
+        public void Move(Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Up:
+                    MoveAlgorithm.MoveUp(this);
+                    break;
+                case Direction.Down:
+                    MoveAlgorithm.MoveDown(this);
+                    break;
+                case Direction.Right:
+                    MoveAlgorithm.MoveRight(this);
+                    break;
+                case Direction.Left:
+                    MoveAlgorithm.MoveLeft(this);
+                    break;
+            }
+        }
 
         public void GetHit(int damage)
         {
@@ -49,41 +77,41 @@ namespace Tank2021SharedContent.Abstract.Tanks
             return false;
         }
 
-        public void MoveDown()
-        {
-            if(Coordinates.Y + Speed + ClientSideConstants.TankHeight <= ClientSideConstants.ClientHeight)
-            {
-                Coordinates.Y += Speed;
-                Rotation = RotateFlipType.RotateNoneFlipNone;
-            }
-        }
+        //public void MoveDown()
+        //{
+        //    if(Coordinates.Y + Speed + ClientSideConstants.TankHeight <= ClientSideConstants.ClientHeight)
+        //    {
+        //        Coordinates.Y += Speed;
+        //        Rotation = RotateFlipType.RotateNoneFlipNone;
+        //    }
+        //}
 
-        public void MoveUp()
-        {
-            if(Coordinates.Y - Speed >= 0)
-            {
-                Coordinates.Y -= Speed;
-                Rotation = RotateFlipType.RotateNoneFlipY;
-            }
-        }
+        //public void MoveUp()
+        //{
+        //    if(Coordinates.Y - Speed >= 0)
+        //    {
+        //        Coordinates.Y -= Speed;
+        //        Rotation = RotateFlipType.RotateNoneFlipY;
+        //    }
+        //}
 
-        public void MoveRight()
-        {
-            if(Coordinates.X + Speed + ClientSideConstants.TankHeight <= ClientSideConstants.ClientWidth)
-            {
-                Coordinates.X += Speed;
-                Rotation = RotateFlipType.Rotate90FlipX;
-            }
-        }
+        //public void MoveRight()
+        //{
+        //    if(Coordinates.X + Speed + ClientSideConstants.TankHeight <= ClientSideConstants.ClientWidth)
+        //    {
+        //        Coordinates.X += Speed;
+        //        Rotation = RotateFlipType.Rotate90FlipX;
+        //    }
+        //}
 
-        public void MoveLeft()
-        {
-            if(Coordinates.X - Speed >= 0)
-            {
-                Coordinates.X -= Speed;
-                Rotation = RotateFlipType.Rotate270FlipX;
-            }
-        }
+        //public void MoveLeft()
+        //{
+        //    if(Coordinates.X - Speed >= 0)
+        //    {
+        //        Coordinates.X -= Speed;
+        //        Rotation = RotateFlipType.Rotate270FlipX;
+        //    }
+        //}
 
         public void Shoot()
         {
