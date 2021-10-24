@@ -13,5 +13,10 @@ namespace Tank2021SharedContent
             Points = 0;
             IsConnected = false;
         }
+
+        public Player Copy()
+        {
+            return (Player)this.MemberwiseClone();
+        }
     }
 }

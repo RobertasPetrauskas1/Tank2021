@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System.Drawing;
 using System.Threading.Tasks;
 using Tank2021Server;
-using Tank2021Server.Observer.Observers;
 using Tank2021SharedContent;
-using Tank2021SharedContent.Abstract.Guns;
-using Tank2021SharedContent.Abstract.Tanks;
 using Tank2021SharedContent.Enums;
 using Tank2021SharedContent.Factory;
-using Tank2021SharedContent.Observer.Subjects;
 
 namespace Tank2021.Hubs
 {
@@ -42,6 +37,7 @@ namespace Tank2021.Hubs
             mapController.InitGameoverObservable();
             mapController.timer.Enabled = true;
             mapController.Map.BackgroundImageLocation = @"../../../Properties/Resources/background.png";
+
             await Clients.All.SendAsync("InitializeGame", mapController.Map.ToJson());
         }
 

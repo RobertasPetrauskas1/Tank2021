@@ -31,10 +31,13 @@ namespace Tank2021SharedContent.Abstract.Tanks
 
         public abstract AbstractFactory GetAbstractFactory();
 
-        public void SetMoveAlgorithm(MoveAlgorithm moveAlgorithm)
-        {
-            MoveAlgorithm = moveAlgorithm;
-        }
+        public void SetMoveAlgorithm(MoveAlgorithm moveAlgorithm) => MoveAlgorithm = moveAlgorithm;
+
+        public void SetHealth(int health) => Health = health;
+
+        public void SetSpeed(int speed) => Speed = speed;
+
+        public void SetPhoto(string imageLocation) => ImageLocation = imageLocation;
 
         public void Move(Direction direction)
         {
@@ -53,6 +56,11 @@ namespace Tank2021SharedContent.Abstract.Tanks
                     MoveAlgorithm.MoveLeft(this);
                     break;
             }
+        }
+
+        public Tank Copy()
+        {
+            return (Tank)this.MemberwiseClone();
         }
 
         public void GetHit(int damage)

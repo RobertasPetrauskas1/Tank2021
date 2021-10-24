@@ -47,17 +47,6 @@ namespace Tank2021Server
                 var player1Gun = player1Tank?.Gun;
                 var player2Gun = player2Tank?.Gun;
 
-                //if (await IsGameOver(player1Tank, player2Tank))
-                //{
-                //    ResetGame();
-                //}
-                //else
-                //{
-                //    UpdateBulletMovement(player1Gun, player2Tank);
-                //    UpdateBulletMovement(player2Gun, player1Tank);
-                //    ConfigureTankSpeeds(player1Tank, player2Tank);
-                //    await hubContext.Clients.All.SendAsync("UpdateMap", Map.ToJson());
-                //}
                 UpdateBulletMovement(player1Gun, player2Tank);
                 UpdateBulletMovement(player2Gun, player1Tank);
                 ConfigureTankSpeeds(player1Tank, player2Tank);
@@ -79,8 +68,11 @@ namespace Tank2021Server
 
             var tankHalfHealth = (int)(tankStartingHealth * 0.5);
             var tankQuarterHealth = (int)(tankStartingHealth * 0.25);
+            var tankMinimalHealth = (int)(tankStartingHealth * 0.1);
 
-            if (tank.Health <= tankQuarterHealth)
+            if (tank.Health <= tankMinimalHealth)
+                tank.SetMoveAlgorithm(new StopMovement());
+            else if (tank.Health <= tankQuarterHealth)
                 tank.SetMoveAlgorithm(new SlowMovement());
             else if (tank.Health <= tankHalfHealth)
                 tank.SetMoveAlgorithm(new MediumMovement());
@@ -131,6 +123,7 @@ namespace Tank2021Server
                     {
                         tank.GetHit(gun.Bullets[index].Damage);
                         gun.Bullets.RemoveAt(index);
+
                         gameStatus.UpdateStatus(Map);
                         gameStatus.NotifyAll();
                     }
@@ -170,10 +163,10 @@ namespace Tank2021Server
             var player2Tank = Map.GetPlayer(PlayerType.PLAYER2).Tank;
             gameStatus = new GameStatus(new PlayerInfo(player1Tank.Health, player1Tank.MoveAlgorithm), new PlayerInfo(player2Tank.Health, player2Tank.MoveAlgorithm));
         }
+
         public void InitGameoverObservable()
         {
             gameOverObserver = new GameOverObserver(gameStatus, hubContext);
-
         }
     }
 }

@@ -28,6 +28,11 @@ namespace Tank2021SharedContent.Abstract.Guns
             ImageLocation = @"../../../Properties/Resources/small_bullet.png";
         }
 
+        public Bullet Copy()
+        {
+            return (Bullet)this.MemberwiseClone();
+        }
+
         public void Move()
         {
             switch (FlightDirection) 

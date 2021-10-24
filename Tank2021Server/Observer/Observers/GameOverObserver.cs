@@ -7,7 +7,7 @@ using Tank2021SharedContent.Observer.Subjects;
 
 namespace Tank2021Server.Observer.Observers
 {
-    class GameOverObserver : IObserver
+    public class GameOverObserver : IObserver
     {
         public Subject Subject { get; set; }
         public IHubContext<TankHub> HubContext { get; set; }
@@ -25,13 +25,11 @@ namespace Tank2021Server.Observer.Observers
             {
                 await HubContext.Clients.All.SendAsync("GameOver", PlayerType.PLAYER2);
                 MapControllerSingleton.getMapController().ResetGame();
-
             }
             if (((GameStatus)Subject).Player2Info.TankHealth <= 0)
             {
                 await HubContext.Clients.All.SendAsync("GameOver", PlayerType.PLAYER1);
                 MapControllerSingleton.getMapController().ResetGame();
-
             }
         }
     }

@@ -8,5 +8,10 @@ namespace Tank2021SharedContent.Abstract.Armors
     {
         public abstract int DamageReduction { get; set; }
         public abstract int HitsLeft { get; set; }
+
+        public Armor Copy()
+        {
+            return (Armor)this.MemberwiseClone();
+        }
     }
 }

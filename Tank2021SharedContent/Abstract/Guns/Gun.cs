@@ -43,5 +43,10 @@ namespace Tank2021SharedContent.Abstract.Guns
                 NextShootTime = DateTime.Now.Add(Cooldown);
             }
         }
+
+        public Gun Copy()
+        {
+            return (Gun)this.MemberwiseClone();
+        }
     }
 }

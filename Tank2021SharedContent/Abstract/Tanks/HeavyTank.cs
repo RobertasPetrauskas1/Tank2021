@@ -14,12 +14,9 @@ namespace Tank2021SharedContent.Abstract.Tanks
         public override int Speed { get; set; }
         public override string ImageLocation { get; set; }
 
-        public HeavyTank(Point coordinates, int speed, RotateFlipType rotation, string imageLocation, int health, MoveAlgorithm moveAlgorithm) :
+        public HeavyTank(Point coordinates, RotateFlipType rotation, MoveAlgorithm moveAlgorithm) :
             base(coordinates, rotation, moveAlgorithm)
         {
-            Speed = speed;
-            ImageLocation = imageLocation;
-            Health = health;
         }
 
         public override AbstractFactory GetAbstractFactory()
