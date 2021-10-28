@@ -23,7 +23,7 @@ namespace Tank2021SharedContent
         public void MoveLeft(PlayerType player) => GetPlayer(player).Tank.Move(Direction.Left);
         public void MoveRight(PlayerType player) => GetPlayer(player).Tank.Move(Direction.Right);
         public void Shoot(PlayerType player) => GetPlayer(player).Tank.Shoot();
-        public string ToJson() => JsonConvert.SerializeObject(CopyShallow(), new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
+        public string ToJson() => JsonConvert.SerializeObject(CopyDeep(), new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
 
         public Map CopyShallow()
         {
@@ -48,11 +48,6 @@ namespace Tank2021SharedContent
             player.Tank = player.Tank.Copy();
             player.Tank.Armor = player.Tank.Armor.Copy();
             player.Tank.Gun = player.Tank.Gun.Copy();
-
-            for(var index = 0; index < player.Tank.Gun.Bullets.Count; index++)
-            {
-                player.Tank.Gun.Bullets[index] = player.Tank.Gun.Bullets[index].Copy();
-            }
         }
     }
 }
