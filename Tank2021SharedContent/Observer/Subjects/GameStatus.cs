@@ -53,6 +53,8 @@ namespace Tank2021SharedContent.Observer.Subjects
 
             Player2Info.TankHealth = player2.Tank.Health;
             Player2Info.TankMovement = player2.Tank.MoveAlgorithm;
+
+            NotifyAll();
         }
     }
 }

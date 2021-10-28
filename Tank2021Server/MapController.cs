@@ -125,7 +125,6 @@ namespace Tank2021Server
                         gun.Bullets.RemoveAt(index);
 
                         gameStatus.UpdateStatus(Map);
-                        gameStatus.NotifyAll();
                     }
                     else if (gun.Bullets[index].MarkForDelete)
                     {
