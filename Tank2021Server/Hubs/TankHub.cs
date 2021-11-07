@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Tank2021Server;
 using Tank2021SharedContent;
+using Tank2021SharedContent.Command;
+using Tank2021SharedContent.Command.Commands;
 using Tank2021SharedContent.Enums;
 using Tank2021SharedContent.Factory;
 
@@ -9,6 +11,16 @@ namespace Tank2021.Hubs
 {
     public class TankHub : Hub
     {
+        ICommand player1MoveLeft = new MoveLeft(MapControllerSingleton.getMapController().Map, PlayerType.PLAYER1);
+        ICommand player1MoveRight = new MoveRight(MapControllerSingleton.getMapController().Map, PlayerType.PLAYER1);
+        ICommand player1MoveUp = new MoveUp(MapControllerSingleton.getMapController().Map, PlayerType.PLAYER1);
+        ICommand player1MoveDown = new MoveDown(MapControllerSingleton.getMapController().Map, PlayerType.PLAYER1);
+
+        ICommand player2MoveLeft = new MoveLeft(MapControllerSingleton.getMapController().Map, PlayerType.PLAYER2);
+        ICommand player2MoveRight = new MoveRight(MapControllerSingleton.getMapController().Map, PlayerType.PLAYER2);
+        ICommand player2MoveUp = new MoveUp(MapControllerSingleton.getMapController().Map, PlayerType.PLAYER2);
+        ICommand player2MoveDown = new MoveDown(MapControllerSingleton.getMapController().Map, PlayerType.PLAYER2);
+
         public async Task ConnectPlayer(PlayerType player, TankType tank)
         {
             var mapController = MapControllerSingleton.getMapController();
@@ -61,30 +73,67 @@ namespace Tank2021.Hubs
 
         public async Task MoveDown(PlayerType player)
         {
-            var mapController = MapControllerSingleton.getMapController();
-            mapController.Map.MoveDown(player);
-            await Clients.All.SendAsync("UpdateMap", mapController.Map.ToJson());
+            if(player == PlayerType.PLAYER1)
+            {
+                CommandInvokerSingleton.GetPlayer1Invoker().execute(player1MoveDown);
+            }
+            else if (player == PlayerType.PLAYER2)
+            {
+                CommandInvokerSingleton.GetPlayer2Invoker().execute(player2MoveDown);
+            }
+            await Clients.All.SendAsync("UpdateMap", MapControllerSingleton.getMapController().Map.ToJson());
         }
 
         public async Task MoveUp(PlayerType player)
         {
-            var mapController = MapControllerSingleton.getMapController();
-            mapController.Map.MoveUp(player);
-            await Clients.All.SendAsync("UpdateMap", mapController.Map.ToJson());
+            if (player == PlayerType.PLAYER1)
+            {
+                CommandInvokerSingleton.GetPlayer1Invoker().execute(player1MoveUp);
+            }
+            else if (player == PlayerType.PLAYER2)
+            {
+                CommandInvokerSingleton.GetPlayer2Invoker().execute(player2MoveUp);
+            }
+            await Clients.All.SendAsync("UpdateMap", MapControllerSingleton.getMapController().Map.ToJson());
         }
 
         public async Task MoveLeft(PlayerType player)
         {
-            var mapController = MapControllerSingleton.getMapController();
-            mapController.Map.MoveLeft(player);
-            await Clients.All.SendAsync("UpdateMap", mapController.Map.ToJson());
+            if (player == PlayerType.PLAYER1)
+            {
+                CommandInvokerSingleton.GetPlayer1Invoker().execute(player1MoveLeft);
+            }
+            else if (player == PlayerType.PLAYER2)
+            {
+                CommandInvokerSingleton.GetPlayer2Invoker().execute(player2MoveLeft);
+            }
+            await Clients.All.SendAsync("UpdateMap", MapControllerSingleton.getMapController().Map.ToJson());
         }
 
         public async Task MoveRight(PlayerType player)
         {
-            var mapController = MapControllerSingleton.getMapController();
-            mapController.Map.MoveRight(player);
-            await Clients.All.SendAsync("UpdateMap", mapController.Map.ToJson());
+            if (player == PlayerType.PLAYER1)
+            {
+                CommandInvokerSingleton.GetPlayer1Invoker().execute(player1MoveRight);
+            }
+            else if (player == PlayerType.PLAYER2)
+            {
+                CommandInvokerSingleton.GetPlayer2Invoker().execute(player2MoveRight);
+            }
+            await Clients.All.SendAsync("UpdateMap", MapControllerSingleton.getMapController().Map.ToJson());
+        }
+
+        public async Task Undo(PlayerType player)
+        {
+            if (player == PlayerType.PLAYER1)
+            {
+                CommandInvokerSingleton.GetPlayer1Invoker().undoLast();
+            }
+            else if (player == PlayerType.PLAYER2)
+            {
+                CommandInvokerSingleton.GetPlayer2Invoker().undoLast();
+            }
+            await Clients.All.SendAsync("UpdateMap", MapControllerSingleton.getMapController().Map.ToJson());
         }
 
         public async Task Shoot(PlayerType player)

@@ -165,6 +165,10 @@ namespace Tank2021Client
                     if (gameStarted)
                         await _hubConnection.SendAsync("Shoot", playerType);
                     break;
+                case Keys.Z:
+                    if (gameStarted)
+                        await _hubConnection.SendAsync("Undo", playerType);
+                    break;
             }
         }
 
