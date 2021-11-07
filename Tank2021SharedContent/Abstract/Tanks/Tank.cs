@@ -5,6 +5,7 @@ using Tank2021SharedContent.Abstract.Armors;
 using Tank2021SharedContent.Abstract.Guns;
 using Tank2021SharedContent.AbstractFactories;
 using Tank2021SharedContent.Constants;
+using Tank2021SharedContent.Decorator;
 using Tank2021SharedContent.Enums;
 using Tank2021SharedContent.Strategy;
 
@@ -16,7 +17,11 @@ namespace Tank2021SharedContent.Abstract.Tanks
         public abstract Armor Armor { get; set; }
         public abstract int Health { get; set; }
         public abstract int Speed { get; set; }
-        public abstract string ImageLocation { get; set; }
+        public abstract UnitImage TankImage { get; set; }
+
+        public bool IsSmoking { get; set; }
+        public bool IsOnFire { get; set; }
+        public bool IsCriticalyDamaged { get; set; }
 
         public RotateFlipType Rotation { get; set; }
         public MoveAlgorithm MoveAlgorithm { get; set; }
@@ -31,13 +36,40 @@ namespace Tank2021SharedContent.Abstract.Tanks
 
         public abstract AbstractFactory GetAbstractFactory();
 
+        public void SetSmoking()
+        {
+            if (!IsSmoking)
+            {
+                IsSmoking = true;
+                TankImage = new Smoke(TankImage);
+            }
+        }
+
+        public void SetOnFire()
+        {
+            if (!IsOnFire)
+            {
+                IsOnFire = true;
+                TankImage = new Fire(TankImage);
+            }
+        }
+
+        public void SetCriticalyDamaged()
+        {
+            if (!IsCriticalyDamaged)
+            {
+                IsCriticalyDamaged = true;
+                TankImage = new Danger(TankImage);
+            }
+        }
+
         public void SetMoveAlgorithm(MoveAlgorithm moveAlgorithm) => MoveAlgorithm = moveAlgorithm;
 
         public void SetHealth(int health) => Health = health;
 
         public void SetSpeed(int speed) => Speed = speed;
 
-        public void SetPhoto(string imageLocation) => ImageLocation = imageLocation;
+        public void SetPhoto(string imageFileName) => TankImage = new TankImage(imageFileName);
 
         public void Move(Direction direction)
         {
@@ -84,6 +116,7 @@ namespace Tank2021SharedContent.Abstract.Tanks
 
             return false;
         }
+
 
         //public void MoveDown()
         //{

@@ -22,7 +22,7 @@ namespace Tank2021SharedContent.Builders
 
         public override void BuildTankPhoto()
         {
-            Tank.SetPhoto(@"../../../Properties/Resources/medium_tank.png");
+            Tank.SetPhoto(@"medium_tank.png");
         }
 
         public override void BuildTankSpeed()

@@ -8,6 +8,7 @@ using Tank2021Server.Observer.Observers;
 using Tank2021SharedContent;
 using Tank2021SharedContent.Abstract.Guns;
 using Tank2021SharedContent.Abstract.Tanks;
+using Tank2021SharedContent.Decorator;
 using Tank2021SharedContent.Enums;
 using Tank2021SharedContent.Observer.Observers;
 using Tank2021SharedContent.Observer.Subjects;
@@ -49,20 +50,20 @@ namespace Tank2021Server
 
                 UpdateBulletMovement(player1Gun, player2Tank);
                 UpdateBulletMovement(player2Gun, player1Tank);
-                ConfigureTankSpeeds(player1Tank, player2Tank);
+                ConfigureTank(player1Tank, player2Tank);
                 await hubContext.Clients.All.SendAsync("UpdateMap", Map.ToJson());
             };
         }
 
-        public void ConfigureTankSpeeds(Tank player1Tank, Tank player2Tank)
+        public void ConfigureTank(Tank player1Tank, Tank player2Tank)
         {
             if(player1Tank != null)
-                AdjustTankSpeed(player1Tank);
+                ConfigureTankBasedOnHealth(player1Tank);
             if(player2Tank != null)
-                AdjustTankSpeed(player2Tank);
+                ConfigureTankBasedOnHealth(player2Tank);
         }
 
-        public void AdjustTankSpeed(Tank tank)
+        public void ConfigureTankBasedOnHealth(Tank tank)
         {
             var tankStartingHealth = Helper.GetSpecificTankHp(tank);
 
@@ -71,11 +72,20 @@ namespace Tank2021Server
             var tankMinimalHealth = (int)(tankStartingHealth * 0.1);
 
             if (tank.Health <= tankMinimalHealth)
+            {
                 tank.SetMoveAlgorithm(new StopMovement());
+                tank.SetCriticalyDamaged();
+            }
             else if (tank.Health <= tankQuarterHealth)
+            {
                 tank.SetMoveAlgorithm(new SlowMovement());
+                tank.SetOnFire();
+            }
             else if (tank.Health <= tankHalfHealth)
+            {
                 tank.SetMoveAlgorithm(new MediumMovement());
+                tank.SetSmoking();
+            }
         }
 
         private async Task<bool> IsGameOver(Tank player1Tank, Tank player2Tank)

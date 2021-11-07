@@ -124,7 +124,7 @@ namespace Tank2021Client
         {
             if (tank != null)
             {
-                var tankImage = Image.FromFile(tank.ImageLocation);
+                var tankImage = tank.TankImage.GetImage();
                 figures.Add(new Figure(tank.Coordinates, tankImage.Width, tankImage.Height, tank.Rotation, tankImage));
             }
         }
