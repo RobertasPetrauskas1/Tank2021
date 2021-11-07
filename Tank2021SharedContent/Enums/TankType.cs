@@ -8,6 +8,7 @@ namespace Tank2021SharedContent.Enums
     {
         LightTank,
         MediumTank,
-        HeavyTank
+        HeavyTank,
+        HeavyForcefieldTank
     }
 }

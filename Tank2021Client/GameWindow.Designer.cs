@@ -72,6 +72,7 @@ namespace Tank2021Client
         private System.Windows.Forms.Button LightTankButton;
         private System.Windows.Forms.Button MediumTankButton;
         private System.Windows.Forms.Button HeavyTankButton;
+        private System.Windows.Forms.Button HeavyForcefieldTankButton;
         private System.Windows.Forms.Label player1Score;
         private System.Windows.Forms.Label player2Score;
     }

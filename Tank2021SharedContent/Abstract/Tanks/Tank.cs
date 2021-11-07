@@ -98,10 +98,10 @@ namespace Tank2021SharedContent.Abstract.Tanks
         public void GetHit(int damage)
         {
             var currentDamage = damage;
-            if(Armor.HitsLeft > 0)
+            if(Armor.GetHitsLeft() > 0)
             {
-                currentDamage = Armor.DamageReduction >= damage ? 0 : damage - Armor.DamageReduction;
-                Armor.HitsLeft--;
+                currentDamage = Armor.GetDamageReduction() >= damage ? 0 : damage - Armor.GetDamageReduction();
+                Armor.GetHit();
             }
 
             Health -= currentDamage;

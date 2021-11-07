@@ -225,7 +225,7 @@ namespace Tank2021Client
             this.gameEndLabel = new System.Windows.Forms.Label();
             this.gameEndLabel.AutoSize = true;
             this.gameEndLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.gameEndLabel.Location = new System.Drawing.Point(420, 350);
+            this.gameEndLabel.Location = new System.Drawing.Point(420, 390);
             this.gameEndLabel.Name = "gameStartLabel";
             this.gameEndLabel.Size = new System.Drawing.Size(250, 20);
             this.gameEndLabel.TabIndex = 0;
@@ -245,7 +245,8 @@ namespace Tank2021Client
             this.LightTankButton = new System.Windows.Forms.Button();
             this.MediumTankButton = new System.Windows.Forms.Button();
             this.HeavyTankButton = new System.Windows.Forms.Button();
-            
+            this.HeavyForcefieldTankButton = new System.Windows.Forms.Button();
+
             this.ChooseTankLabel.AutoSize = true;
             this.ChooseTankLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.ChooseTankLabel.Location = new System.Drawing.Point(417, 45);
@@ -278,6 +279,15 @@ namespace Tank2021Client
             this.HeavyTankButton.UseVisualStyleBackColor = true;
             this.HeavyTankButton.Click += TankSelectionClick;
 
+            this.HeavyForcefieldTankButton.Location = new System.Drawing.Point(417, 337);
+            this.HeavyForcefieldTankButton.Name = "HeavyForcefieldTankButton";
+            this.HeavyForcefieldTankButton.Size = new System.Drawing.Size(138, 32);
+            this.HeavyForcefieldTankButton.TabIndex = 4;
+            this.HeavyForcefieldTankButton.Text = "Heavy Forcefield Tank";
+            this.HeavyForcefieldTankButton.UseVisualStyleBackColor = true;
+            this.HeavyForcefieldTankButton.Click += TankSelectionClick;
+
+            this.Controls.Add(this.HeavyForcefieldTankButton);
             this.Controls.Add(this.HeavyTankButton);
             this.Controls.Add(this.MediumTankButton);
             this.Controls.Add(this.LightTankButton);
@@ -298,6 +308,9 @@ namespace Tank2021Client
                 case "HeavyTankButton":
                     await InitializeGame(TankType.HeavyTank);
                     break;
+                case "HeavyForcefieldTankButton":
+                    await InitializeGame(TankType.HeavyForcefieldTank);
+                    break;
                 default:
                     throw new ArgumentException($"No such button exists -> {button.Name}");
             }
@@ -311,6 +324,7 @@ namespace Tank2021Client
             this.LightTankButton.Visible = enabled;
             this.MediumTankButton.Visible = enabled;
             this.HeavyTankButton.Visible = enabled;
+            this.HeavyForcefieldTankButton.Visible = enabled;
         }
 
         private async Task InitializeGame(TankType tank)

@@ -13,5 +13,22 @@ namespace Tank2021SharedContent.Abstract.Armors
         {
             return (Armor)this.MemberwiseClone();
         }
+
+        public virtual int GetHitsLeft()
+        {
+            return HitsLeft;
+        }
+
+        public virtual int GetDamageReduction()
+        {
+            return DamageReduction;
+        }
+        public virtual void GetHit()
+        {
+            if(HitsLeft > 0)
+            {
+                HitsLeft--;
+            }
+        }
     }
 }

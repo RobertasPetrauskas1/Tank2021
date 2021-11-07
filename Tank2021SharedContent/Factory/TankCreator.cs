@@ -6,6 +6,7 @@ using Tank2021SharedContent.Abstract.Guns;
 using Tank2021SharedContent.Abstract.Tanks;
 using Tank2021SharedContent.Builders;
 using Tank2021SharedContent.Constants;
+using Tank2021SharedContent.Decorator;
 using Tank2021SharedContent.Enums;
 using Tank2021SharedContent.Strategy;
 
@@ -60,6 +61,21 @@ namespace Tank2021SharedContent.Factory
                     heavyTank.Armor = heavyFactory.CreateArmor();
 
                     return heavyTank;
+
+                case TankType.HeavyForcefieldTank:
+                    var heavyForcefieldTank = new HeavyForcefieldTank(randomLocation, RotateFlipType.RotateNoneFlipNone, new FastMovement());
+                    var heavyForcefieldFactory = heavyForcefieldTank.GetAbstractFactory();
+
+                    builder = new HeavyForcefieldTankBuilder(heavyForcefieldTank);
+                    BuildTank(builder);
+                    heavyForcefieldTank = (HeavyForcefieldTank)GetTank(builder);
+
+                    heavyForcefieldTank.Gun = heavyForcefieldFactory.CreateGun();
+                    heavyForcefieldTank.Armor = heavyForcefieldFactory.CreateArmor();
+
+                    heavyForcefieldTank.TankImage = new ForceField(heavyForcefieldTank.TankImage);
+
+                    return heavyForcefieldTank;
 
                 default:
                     throw new ArgumentException($"Unknown tank type -> {tankType}");
