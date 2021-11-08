@@ -3,12 +3,10 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Tank2021Client.Facade;
 using Tank2021SharedContent;
-using Tank2021SharedContent.Abstract.Guns;
-using Tank2021SharedContent.Abstract.Tanks;
 using Tank2021SharedContent.Constants;
 using Tank2021SharedContent.Enums;
 
@@ -18,6 +16,7 @@ namespace Tank2021Client
     {
         private const string ConnectionUrl = "https://localhost:5001/TankHub";
         private HubConnection _hubConnection;
+        ClientFacade facade;
         PlayerType playerType;
         IList<Figure> figures;
         bool gameStarted = false;
@@ -36,6 +35,7 @@ namespace Tank2021Client
             StartSignalR();
 
             figures = new List<Figure>();
+            facade = new ClientFacade(this);
         }
 
         public void StartSignalR()
@@ -79,40 +79,12 @@ namespace Tank2021Client
             _hubConnection.On<string>("UpdateMap", (updatedMap) =>
             {
                 var map = JsonConvert.DeserializeObject<Map>(updatedMap, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
-                UpdateMap(map);
+                facade.UpdateMap(map);
             });
 
-            UpdateMap(map);
+            facade.UpdateMap(map);
         }
 
-        public void UpdateMap(Map map)
-        {
-            figures = new List<Figure>();
-            var player1Tank = map.GetPlayer(PlayerType.PLAYER1).Tank;
-            var player2Tank = map.GetPlayer(PlayerType.PLAYER2).Tank;
-
-            UpdateTank(player1Tank);
-            UpdateTank(player2Tank);
-            UpdateBullets(player1Tank?.Gun?.Bullets);
-            UpdateBullets(player2Tank?.Gun?.Bullets);
-            UpdateScores(player1Tank, player2Tank);
-            Invalidate();
-        }
-
-        private void UpdateScores(Tank player1Tank, Tank player2Tank)
-        {
-            var player1ArmorHits = player1Tank?.Armor?.HitsLeft;
-            var player1Health = player1Tank?.Health;
-
-            var player2ArmorHits = player2Tank?.Armor?.HitsLeft;
-            var player2Health = player2Tank?.Health;
-
-            this.player1Score.Text = $"{PlayerType.PLAYER1}\nArmorHits: {(player1ArmorHits != null ? player1ArmorHits : "UNKNOWN")}\nTankHealth: {(player1Health != null ? player1Health : "UNKNOWN")}";
-            this.player1Score.Size = new Size(150, 150);
-
-            this.player2Score.Text = $"{PlayerType.PLAYER2}\nArmorHits: {(player2ArmorHits != null ? player2ArmorHits : "UNKNOWN")}\nTankHealth: {(player2Health != null ? player2Health : "UNKNOWN")}";
-            this.player2Score.Size = new Size(150, 150);
-        }
 
         private void SetBackground(string ImageLocation)
         {
@@ -120,26 +92,6 @@ namespace Tank2021Client
                 this.BackgroundImage = Image.FromFile(ImageLocation);
         }
 
-        private void UpdateTank(Tank tank)
-        {
-            if (tank != null)
-            {
-                var tankImage = tank.TankImage.GetImage();
-                figures.Add(new Figure(tank.Coordinates, tankImage.Width, tankImage.Height, tank.Rotation, tankImage));
-            }
-        }
-
-        private void UpdateBullets(List<Bullet> bullets)
-        {
-            if(bullets != null && bullets.Any())
-            {
-                foreach(var bullet in bullets)
-                {
-                    var bulletImage = Image.FromFile(bullet.ImageLocation);
-                    figures.Add(new Figure(bullet.Coordinates, bulletImage.Width, bulletImage.Height, bullet.Rotation, bulletImage));
-                }
-            }
-        }
 
         private async void GameWindow_KeyDown(object sender, KeyEventArgs e)
         {
@@ -360,6 +312,31 @@ namespace Tank2021Client
             
             this.Controls.Add(this.player2Score);
             this.Controls.Add(this.player1Score);
+        }
+
+        public void AddFigure(Figure figure)
+        {
+            figures.Add(figure);
+        }
+        public void RemoveFigure(Figure figure)
+        {
+            figures.Remove(figure);
+        }
+        public void SetFigures(IList<Figure> figures)
+        {
+            this.figures = figures;
+        }
+        public Label GetScoreLabel(PlayerType player)
+        {
+            switch (player)
+            {
+                case PlayerType.PLAYER1:
+                    return this.player1Score;
+                case PlayerType.PLAYER2:
+                    return this.player2Score;
+                default:
+                    throw new ArgumentException($"No such playerType -> {player}");
+            }
         }
     }
 }

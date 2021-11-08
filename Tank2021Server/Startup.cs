@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Tank2021.Hubs;
 using Tank2021SharedContent;
 using Tank2021SharedContent.Command;
+using Tank2021SharedContent.Facade;
 
 namespace Tank2021Server
 {
@@ -42,9 +43,10 @@ namespace Tank2021Server
             app.UseAuthorization();
 
             var hubContext = app.ApplicationServices.GetService<IHubContext<TankHub>>();
+            FacadeSingleton.setFacade(new Facade());
             MapControllerSingleton.setMap(new MapController(hubContext));
             CommandInvokerSingleton.SetPlayer1Invoker(new Invoker());
-            CommandInvokerSingleton.SetPlayer2Invoker(new Invoker());
+            CommandInvokerSingleton.SetPlayer2Invoker(new Invoker());       
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<TankHub>("/tankhub");

@@ -10,6 +10,7 @@ using Tank2021SharedContent.Abstract.Guns;
 using Tank2021SharedContent.Abstract.Tanks;
 using Tank2021SharedContent.Decorator;
 using Tank2021SharedContent.Enums;
+using Tank2021SharedContent.Facade;
 using Tank2021SharedContent.Observer.Observers;
 using Tank2021SharedContent.Observer.Subjects;
 using Tank2021SharedContent.Strategy;
@@ -24,10 +25,14 @@ namespace Tank2021Server
         public Timer timer = new Timer();
         public static double timerSpeed = 30;
         public IObserver gameOverObserver;
+        public Facade facade;
 
         public MapController(IHubContext<TankHub> hubContext)
         {
-            Map = new Map();
+            //Map = new Map();
+            MapSingleton.setMap(new Map());
+            Map = MapSingleton.getMap();
+            facade = FacadeSingleton.getFacade();
             this.hubContext = hubContext;
             timer.Interval = timerSpeed;
             timer.Enabled = false;
@@ -48,45 +53,13 @@ namespace Tank2021Server
                 var player1Gun = player1Tank?.Gun;
                 var player2Gun = player2Tank?.Gun;
 
-                UpdateBulletMovement(player1Gun, player2Tank);
-                UpdateBulletMovement(player2Gun, player1Tank);
-                ConfigureTank(player1Tank, player2Tank);
+                facade.UpdateBulletMovement(player1Gun, player2Tank);
+                facade.UpdateBulletMovement(player2Gun, player1Tank);
+                facade.ConfigureTank(player1Tank, player2Tank);
                 await hubContext.Clients.All.SendAsync("UpdateMap", Map.ToJson());
             };
         }
 
-        public void ConfigureTank(Tank player1Tank, Tank player2Tank)
-        {
-            if(player1Tank != null)
-                ConfigureTankBasedOnHealth(player1Tank);
-            if(player2Tank != null)
-                ConfigureTankBasedOnHealth(player2Tank);
-        }
-
-        public void ConfigureTankBasedOnHealth(Tank tank)
-        {
-            var tankStartingHealth = Helper.GetSpecificTankHp(tank);
-
-            var tankHalfHealth = (int)(tankStartingHealth * 0.5);
-            var tankQuarterHealth = (int)(tankStartingHealth * 0.25);
-            var tankMinimalHealth = (int)(tankStartingHealth * 0.1);
-
-            if (tank.Health <= tankMinimalHealth)
-            {
-                tank.SetMoveAlgorithm(new StopMovement());
-                tank.SetCriticalyDamaged();
-            }
-            else if (tank.Health <= tankQuarterHealth)
-            {
-                tank.SetMoveAlgorithm(new SlowMovement());
-                tank.SetOnFire();
-            }
-            else if (tank.Health <= tankHalfHealth)
-            {
-                tank.SetMoveAlgorithm(new MediumMovement());
-                tank.SetSmoking();
-            }
-        }
 
         private async Task<bool> IsGameOver(Tank player1Tank, Tank player2Tank)
         {
@@ -113,57 +86,14 @@ namespace Tank2021Server
         public void ResetGame()
         {
             timer.Enabled = false;
-            Map = new Map();
+            //Map = new Map();
+            MapSingleton.setMap(new Map());
+            Map = MapSingleton.getMap();
         }
 
         private bool IsTankDead(Tank tank)
         {
-            if (tank.Health <= 0)
-                return true;
-
-            return false;
-        }
-
-        private void UpdateBulletMovement(Gun gun, Tank tank)
-        {
-            if (gun != null)
-                for (var index = gun.Bullets.Count - 1; index > -1; index--)
-                {
-                    if (IsHittingTank(tank, gun.Bullets[index]))
-                    {
-                        tank.GetHit(gun.Bullets[index].Damage);
-                        gun.Bullets.RemoveAt(index);
-
-                        gameStatus.UpdateStatus(Map);
-                    }
-                    else if (gun.Bullets[index].MarkForDelete)
-                    {
-                        gun.Bullets.RemoveAt(index);
-                    }
-                    else
-                    {
-                        gun.Bullets[index].Move();
-                    }
-                }
-        }
-
-        private bool IsHittingTank(Tank tank, Bullet bullet)
-        {
-            if (tank != null)
-            {
-                var bulletRectangle = new Rectangle(bullet.Coordinates,
-                    Helper.GetBulletSize(bullet));
-
-                var tankRectangle = new Rectangle(tank.Coordinates,
-                    Helper.GetTankSize(tank));
-
-                if (tankRectangle.IntersectsWith(bulletRectangle))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return tank.Health <= 0;
         }
 
         public void InitGameStatus()
@@ -171,6 +101,7 @@ namespace Tank2021Server
             var player1Tank = Map.GetPlayer(PlayerType.PLAYER1).Tank;
             var player2Tank = Map.GetPlayer(PlayerType.PLAYER2).Tank;
             gameStatus = new GameStatus(new PlayerInfo(player1Tank.Health, player1Tank.MoveAlgorithm), new PlayerInfo(player2Tank.Health, player2Tank.MoveAlgorithm));
+            facade.SetGameStatus(gameStatus);
         }
 
         public void InitGameoverObservable()
