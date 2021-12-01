@@ -117,43 +117,6 @@ namespace Tank2021SharedContent.Abstract.Tanks
             return false;
         }
 
-
-        //public void MoveDown()
-        //{
-        //    if(Coordinates.Y + Speed + ClientSideConstants.TankHeight <= ClientSideConstants.ClientHeight)
-        //    {
-        //        Coordinates.Y += Speed;
-        //        Rotation = RotateFlipType.RotateNoneFlipNone;
-        //    }
-        //}
-
-        //public void MoveUp()
-        //{
-        //    if(Coordinates.Y - Speed >= 0)
-        //    {
-        //        Coordinates.Y -= Speed;
-        //        Rotation = RotateFlipType.RotateNoneFlipY;
-        //    }
-        //}
-
-        //public void MoveRight()
-        //{
-        //    if(Coordinates.X + Speed + ClientSideConstants.TankHeight <= ClientSideConstants.ClientWidth)
-        //    {
-        //        Coordinates.X += Speed;
-        //        Rotation = RotateFlipType.Rotate90FlipX;
-        //    }
-        //}
-
-        //public void MoveLeft()
-        //{
-        //    if(Coordinates.X - Speed >= 0)
-        //    {
-        //        Coordinates.X -= Speed;
-        //        Rotation = RotateFlipType.Rotate270FlipX;
-        //    }
-        //}
-
         public void Shoot()
         {
             Gun.Shoot(Helper.GetShotLocation(this), Rotation);

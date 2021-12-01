@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Tank2021SharedContent.Template_Method;
 
 namespace Tank2021SharedContent.Abstract.Guns
 {
@@ -15,6 +16,7 @@ namespace Tank2021SharedContent.Abstract.Guns
             Cooldown = TimeSpan.FromSeconds(0.5); //30 second cooldown
             Damage = 7;
             Speed = 7;
+            DamageAlgorithm = new NormalCritAlgorithm();
         }
     }
 }

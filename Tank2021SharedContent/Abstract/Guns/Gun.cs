@@ -4,11 +4,13 @@ using System.Drawing;
 using System.Text;
 using Tank2021SharedContent.Constants;
 using Tank2021SharedContent.Enums;
+using Tank2021SharedContent.Template_Method;
 
 namespace Tank2021SharedContent.Abstract.Guns
 {
     public abstract class Gun : IUnit
     {
+        public DamageAlgorithmTemplate DamageAlgorithm { get; set; }
         public abstract TimeSpan Cooldown { get; set; }
         public abstract int Damage { get; set; }
         public abstract int Speed { get; set; }
@@ -39,7 +41,7 @@ namespace Tank2021SharedContent.Abstract.Guns
                         throw new Exception("Unknown RotateFlipType");
                 }
 
-                Bullets.Add(new Bullet(Damage, direction, currentCoordinates, Speed, flipType));
+                Bullets.Add(new Bullet(DamageAlgorithm.CalculateDamage(Damage), direction, currentCoordinates, Speed, flipType));
                 NextShootTime = DateTime.Now.Add(Cooldown);
             }
         }
