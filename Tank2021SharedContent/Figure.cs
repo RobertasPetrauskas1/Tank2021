@@ -10,6 +10,7 @@ namespace Tank2021SharedContent
         public int Height { get; set; }
         public RotateFlipType Rotation { get; set; }
         public Image Sprite { get; set; }
+        public bool ShouldRotate { get; set; }
 
         public Figure(Point coordinates, int width, int height, RotateFlipType rotation, Image sprite)
         {
@@ -18,12 +19,24 @@ namespace Tank2021SharedContent
             Height = height;
             Rotation = rotation;
             Sprite = sprite;
+            ShouldRotate = true;
+        }
+
+        public Figure(Point coordinates, int width, int height, RotateFlipType rotation, Image sprite, bool shouldRotate)
+        {
+            Coordinates = coordinates;
+            Width = width;
+            Height = height;
+            Rotation = rotation;
+            Sprite = sprite;
+            ShouldRotate = shouldRotate;
         }
 
         public void Draw(Graphics graphics)
         {
             //Rotate
-            Sprite.RotateFlip(Rotation);
+            if(ShouldRotate)
+                Sprite.RotateFlip(Rotation);
 
             var width = Sprite.Width;
             var height = Sprite.Height;
