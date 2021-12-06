@@ -7,6 +7,7 @@ using Tank2021SharedContent.AbstractFactories;
 using Tank2021SharedContent.Constants;
 using Tank2021SharedContent.Decorator;
 using Tank2021SharedContent.Enums;
+using Tank2021SharedContent.State;
 using Tank2021SharedContent.Strategy;
 
 namespace Tank2021SharedContent.Abstract.Tanks
@@ -19,9 +20,7 @@ namespace Tank2021SharedContent.Abstract.Tanks
         public abstract int Speed { get; set; }
         public abstract UnitImage TankImage { get; set; }
 
-        public bool IsSmoking { get; set; }
-        public bool IsOnFire { get; set; }
-        public bool IsCriticalyDamaged { get; set; }
+        public TankState TankState { get; set; }
 
         public RotateFlipType Rotation { get; set; }
         public MoveAlgorithm MoveAlgorithm { get; set; }
@@ -32,35 +31,30 @@ namespace Tank2021SharedContent.Abstract.Tanks
             Coordinates = coordinates;
             Rotation = rotation;
             MoveAlgorithm = moveAlgorithm;
+            TankState = new Normal(this);
         }
 
         public abstract AbstractFactory GetAbstractFactory();
 
+        public void SetTankState(TankState state)
+        {
+            TankState = state;
+            TankState.HandleChange();
+        }
+
         public void SetSmoking()
         {
-            if (!IsSmoking)
-            {
-                IsSmoking = true;
-                TankImage = new Smoke(TankImage);
-            }
+            TankImage = new Smoke(TankImage);
         }
 
         public void SetOnFire()
         {
-            if (!IsOnFire)
-            {
-                IsOnFire = true;
-                TankImage = new Fire(TankImage);
-            }
+            TankImage = new Fire(TankImage);
         }
 
         public void SetCriticalyDamaged()
         {
-            if (!IsCriticalyDamaged)
-            {
-                IsCriticalyDamaged = true;
-                TankImage = new Danger(TankImage);
-            }
+            TankImage = new Danger(TankImage);
         }
 
         public void SetMoveAlgorithm(MoveAlgorithm moveAlgorithm) => MoveAlgorithm = moveAlgorithm;
