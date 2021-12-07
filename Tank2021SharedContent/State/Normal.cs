@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Tank2021SharedContent.Abstract.Tanks;
+using Tank2021SharedContent.Proxy;
 using Tank2021SharedContent.Strategy;
 
 namespace Tank2021SharedContent.State
@@ -9,24 +10,19 @@ namespace Tank2021SharedContent.State
     public class Normal : TankState
     {
         private Tank tank;
-        private int HalfHealth;
         public Normal(Tank tank)
         {
             this.tank = tank;
-            HalfHealth = (int)(Helper.GetSpecificTankHp(tank) * 0.5);
         }
 
-        public override void HandleChange()
+        public void HandleChange()
         {
             // Do nothing
         }
 
-        public override void TryTransitionState()
+        public void TransitionState()
         {
-            if (tank.Health <= HalfHealth)
-            {
-                tank.SetTankState(new Smoking(tank));
-            }
+            tank.SetTankState(new SmokingProxy(tank));
         }
     }
 }

@@ -5,10 +5,10 @@ using Tank2021SharedContent.Abstract.Tanks;
 
 namespace Tank2021SharedContent.State
 {
-    public abstract class TankState
+    public interface TankState
     {
-        public abstract void HandleChange();
-        public abstract void TryTransitionState();
+        public void HandleChange();
+        public void TransitionState();
 
     }
 }

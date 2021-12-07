@@ -13,13 +13,13 @@ namespace Tank2021SharedContent.State
         {
             this.tank = tank;
         }
-        public override void HandleChange()
+        public void HandleChange()
         {
             tank.SetCriticalyDamaged();
             tank.SetMoveAlgorithm(new StopMovement());
         }
 
-        public override void TryTransitionState()
+        public void TransitionState()
         {
             // No further state
         }

@@ -44,6 +44,7 @@ namespace Tank2021Client
                 .WithUrl(ConnectionUrl)
                 .Build();
 
+
             _hubConnection.On<string>("InitializeGame", (startingMap) => 
             {
                 var map = JsonConvert.DeserializeObject<Map>(startingMap, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });

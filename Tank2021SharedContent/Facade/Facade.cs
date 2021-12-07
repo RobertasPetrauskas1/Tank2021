@@ -23,11 +23,11 @@ namespace Tank2021SharedContent.Facade
         {
             if (player1Tank != null)
             {
-                player1Tank.TankState.TryTransitionState();
+                player1Tank.TankState.TransitionState();
             }
             if (player2Tank != null)
             {
-                player2Tank.TankState.TryTransitionState();
+                player2Tank.TankState.TransitionState();
             }
         }
 

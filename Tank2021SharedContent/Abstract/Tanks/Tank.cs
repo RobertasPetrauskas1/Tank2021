@@ -7,6 +7,7 @@ using Tank2021SharedContent.AbstractFactories;
 using Tank2021SharedContent.Constants;
 using Tank2021SharedContent.Decorator;
 using Tank2021SharedContent.Enums;
+using Tank2021SharedContent.Proxy;
 using Tank2021SharedContent.State;
 using Tank2021SharedContent.Strategy;
 
@@ -31,7 +32,7 @@ namespace Tank2021SharedContent.Abstract.Tanks
             Coordinates = coordinates;
             Rotation = rotation;
             MoveAlgorithm = moveAlgorithm;
-            TankState = new Normal(this);
+            TankState = new NormalProxy(this);
         }
 
         public abstract AbstractFactory GetAbstractFactory();
