@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Tank2021Client.ChanOfResponsibility;
 using Tank2021Client.Facade;
 using Tank2021SharedContent;
 using Tank2021SharedContent.Constants;
@@ -20,6 +21,9 @@ namespace Tank2021Client
         PlayerType playerType;
         IList<Figure> figures;
         bool gameStarted = false;
+
+        IKeyEventHandler keyPressHandler;
+
         public GameWindow(PlayerType player)
         {
             playerType = player;
@@ -36,6 +40,23 @@ namespace Tank2021Client
 
             figures = new List<Figure>();
             facade = new ClientFacade(this);
+
+            // Code must be after StartSignalR() because of _hubConnection dependency
+            var upKeyHandler = new UpKeyHandler(_hubConnection, playerType);
+            var downKeyHandler = new DownKeyHandler(_hubConnection, playerType);
+            var leftKeyHandler = new LeftKeyHandler(_hubConnection, playerType);
+            var rightKeyHandler = new RightKeyHandler(_hubConnection, playerType);
+            var spaceKeyHandler = new SpaceKeyHandler(_hubConnection, playerType);
+            var zKeyHandler = new ZKeyHandler(_hubConnection, playerType);
+
+            upKeyHandler.SetNextHandler(downKeyHandler);
+            downKeyHandler.SetNextHandler(leftKeyHandler);
+            leftKeyHandler.SetNextHandler(rightKeyHandler);
+            rightKeyHandler.SetNextHandler(spaceKeyHandler);
+            spaceKeyHandler.SetNextHandler(zKeyHandler);
+            zKeyHandler.SetNextHandler(new DefaultHandler());
+
+            keyPressHandler = upKeyHandler;
         }
 
         public void StartSignalR()
@@ -96,32 +117,9 @@ namespace Tank2021Client
 
         private async void GameWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            switch(e.KeyCode)
+            if (gameStarted)
             {
-                case Keys.Up:
-                    if (gameStarted)
-                        await _hubConnection.SendAsync("MoveUp", playerType);
-                    break;
-                case Keys.Down:
-                    if (gameStarted)
-                        await _hubConnection.SendAsync("MoveDown", playerType);
-                    break;
-                case Keys.Left:
-                    if (gameStarted)
-                        await _hubConnection.SendAsync("MoveLeft", playerType);
-                    break;
-                case Keys.Right:
-                    if (gameStarted)
-                        await _hubConnection.SendAsync("MoveRight", playerType);
-                    break;
-                case Keys.Space:
-                    if (gameStarted)
-                        await _hubConnection.SendAsync("Shoot", playerType);
-                    break;
-                case Keys.Z:
-                    if (gameStarted)
-                        await _hubConnection.SendAsync("Undo", playerType);
-                    break;
+                await keyPressHandler.HandleAsync(e);
             }
         }
 
