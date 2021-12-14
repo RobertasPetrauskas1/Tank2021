@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Tank2021Server;
 using Tank2021SharedContent;
@@ -6,6 +9,12 @@ using Tank2021SharedContent.Command;
 using Tank2021SharedContent.Command.Commands;
 using Tank2021SharedContent.Enums;
 using Tank2021SharedContent.Factory;
+using Tank2021SharedContent.HubRezults;
+using Tank2021SharedContent.Interpreter;
+using Tank2021SharedContent.Interpreter.Expressions;
+using Tank2021SharedContent.Interpreter.Expressions.Implementations;
+using Tank2021SharedContent.Token.Caretaker;
+using static Tank2021SharedContent.Interpreter.Context;
 
 namespace Tank2021.Hubs
 {
@@ -68,6 +77,104 @@ namespace Tank2021.Hubs
             {
                 var player2 = mapController.Map.GetPlayer(player);
                 player2.Tank = creator.CreateTank(tank);
+            }
+        }
+
+        public async Task CheatCode(PlayerType player, string cheatCode)
+        {
+            var mapController = MapControllerSingleton.getMapController();
+            var specificPlayer = mapController.Map.GetPlayer(player);
+            var context = new Context(specificPlayer);
+
+            var codes = cheatCode.Split(' ').ToList();
+            var expressions = new List<IExpression>();
+            for(var index = 0; index < codes.Count; index++)
+            {
+                switch (codes[index])
+                {
+                    case "-health":
+                        expressions.Add(new HealthRestoreExpression(context, specificPlayer.Tank.Health));
+                        break;
+                    case "-shoot":
+                        expressions.Add(new ShootExpression(context));
+                        break;
+                    case "-move":
+                        if(index + 1 < codes.Count)
+                        {
+                            var direction = codes[index + 1];
+                            Direction parsedDirection;
+                            try
+                            {
+                                parsedDirection = (Direction)Enum.Parse(typeof(Direction), direction, true);
+                            }
+                            catch
+                            {
+                                await Clients.All.SendAsync("CommandStatus", new CodeStatus(false, player));
+                                return;
+                            }
+                            var directionExpression = new DirectionExpression(parsedDirection, context);
+                            expressions.Add(new MoveExpression(directionExpression, context));
+
+                            codes.RemoveAt(index + 1);
+                        }
+                        else
+                        {
+                            await Clients.All.SendAsync("CommandStatus", new CodeStatus(false, player));
+                            return;
+                        }
+                        break;
+                    default:
+                        await Clients.All.SendAsync("CommandStatus", new CodeStatus(false, player));
+                        return;
+                }
+            }
+
+            if (!expressions.Any())
+            {
+                await Clients.All.SendAsync("CommandStatus", new CodeStatus(false, player));
+                return;
+            }
+
+            var caretaker = CaretakerSingleton.getCaretaker();
+            caretaker.AddMomento(context.CreateMomento());
+
+            var commandExpression = new CommandExpression(expressions, context);
+            commandExpression.Interpret();
+
+            await Clients.All.SendAsync("CommandStatus", new CodeStatus(true, player));
+        }
+
+        public async Task UndoCheatCode(PlayerType player)
+        {
+            var caretaker = CaretakerSingleton.getCaretaker();
+            var index = caretaker.GetLastIndex();
+
+            var mapController = MapControllerSingleton.getMapController();
+            var context = new Context(mapController.Map.GetPlayer(player));
+            var onRestore = false;
+
+            while(index > -1)
+            {
+                var momento = caretaker.Undo(index);
+                if (momento == null)
+                    break;
+
+                if (context.RestoreMomento(momento))
+                {
+                    caretaker.Remove(index);
+                    onRestore = true;
+                    break;
+                }
+            }
+
+            if (onRestore)
+            {
+                context.Undo();
+                await Clients.All.SendAsync("CommandUndoStatus", new CodeStatus(true, player));
+            }
+            else
+            {
+                await Clients.All.SendAsync("CommandUndoStatus", new CodeStatus(false, player));
             }
         }
 

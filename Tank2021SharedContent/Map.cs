@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using Tank2021SharedContent.Enums;
 
 namespace Tank2021SharedContent
@@ -11,8 +12,8 @@ namespace Tank2021SharedContent
 
         public Map()
         {
-            player1 = new Player();
-            player2 = new Player();
+            player1 = new Player(PlayerType.PLAYER1);
+            player2 = new Player(PlayerType.PLAYER2);
         }
 
         public Player GetPlayer(PlayerType type) => type == PlayerType.PLAYER1 ? player1 : player2;
@@ -27,7 +28,8 @@ namespace Tank2021SharedContent
 
         public Map CopyShallow()
         {
-            return (Map)this.MemberwiseClone();
+            var newMap =  (Map)this.MemberwiseClone();
+            return newMap;
         }
 
         public Map CopyDeep()

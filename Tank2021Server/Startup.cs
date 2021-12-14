@@ -8,6 +8,7 @@ using Tank2021.Hubs;
 using Tank2021SharedContent;
 using Tank2021SharedContent.Command;
 using Tank2021SharedContent.Facade;
+using Tank2021SharedContent.Token.Caretaker;
 
 namespace Tank2021Server
 {
@@ -45,6 +46,7 @@ namespace Tank2021Server
             var hubContext = app.ApplicationServices.GetService<IHubContext<TankHub>>();
             FacadeSingleton.setFacade(new Facade());
             MapControllerSingleton.setMap(new MapController(hubContext));
+            CaretakerSingleton.setCaretaker(new Caretaker());
             CommandInvokerSingleton.SetPlayer1Invoker(new Invoker());
             CommandInvokerSingleton.SetPlayer2Invoker(new Invoker());       
             app.UseEndpoints(endpoints =>

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tank2021Client.ChanOfResponsibility;
 using Tank2021Client.Facade;
+using Tank2021Client.Mediator.Colleagues;
+using Tank2021Client.Mediator.Mediators;
 using Tank2021SharedContent;
 using Tank2021SharedContent.Constants;
 using Tank2021SharedContent.Enums;
@@ -17,7 +19,8 @@ namespace Tank2021Client
     {
         private const string ConnectionUrl = "https://localhost:5001/TankHub";
         private HubConnection _hubConnection;
-        ClientFacade facade;
+        private GameWindowColleague _gameWindowColleague;
+        private IMediator _mediator;
         PlayerType playerType;
         IList<Figure> figures;
         bool gameStarted = false;
@@ -39,7 +42,9 @@ namespace Tank2021Client
             StartSignalR();
 
             figures = new List<Figure>();
-            facade = new ClientFacade(this);
+            _mediator = new ClientUpdateMediator();
+            _gameWindowColleague = new GameWindowColleague(this, _mediator);
+            _mediator.AddColleague(_gameWindowColleague);
 
             // Code must be after StartSignalR() because of _hubConnection dependency
             var upKeyHandler = new UpKeyHandler(_hubConnection, playerType);
@@ -48,12 +53,14 @@ namespace Tank2021Client
             var rightKeyHandler = new RightKeyHandler(_hubConnection, playerType);
             var spaceKeyHandler = new SpaceKeyHandler(_hubConnection, playerType);
             var zKeyHandler = new ZKeyHandler(_hubConnection, playerType);
+            var consoleKeyHandler = new ConsoleKeyHandler(_hubConnection, playerType);
 
             upKeyHandler.SetNextHandler(downKeyHandler);
             downKeyHandler.SetNextHandler(leftKeyHandler);
             leftKeyHandler.SetNextHandler(rightKeyHandler);
             rightKeyHandler.SetNextHandler(spaceKeyHandler);
-            spaceKeyHandler.SetNextHandler(zKeyHandler);
+            spaceKeyHandler.SetNextHandler(consoleKeyHandler);
+            consoleKeyHandler.SetNextHandler(zKeyHandler);
             zKeyHandler.SetNextHandler(new DefaultHandler());
 
             keyPressHandler = upKeyHandler;
@@ -101,10 +108,10 @@ namespace Tank2021Client
             _hubConnection.On<string>("UpdateMap", (updatedMap) =>
             {
                 var map = JsonConvert.DeserializeObject<Map>(updatedMap, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All });
-                facade.UpdateMap(map);
+                _gameWindowColleague.UpdateGame(map);
             });
 
-            facade.UpdateMap(map);
+            _gameWindowColleague.UpdateGame(map);
         }
 
 
@@ -317,6 +324,13 @@ namespace Tank2021Client
         {
             figures.Add(figure);
         }
+
+        public void AddFigureRange(List<Figure> newfigures)
+        {
+            foreach (var figure in newfigures)
+                figures.Add(figure);
+        }
+
         public void RemoveFigure(Figure figure)
         {
             figures.Remove(figure);
