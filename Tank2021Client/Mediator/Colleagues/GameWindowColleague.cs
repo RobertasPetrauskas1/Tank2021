@@ -66,8 +66,8 @@ namespace Tank2021Client.Mediator.Colleagues
             var player1Tank = map.GetPlayer(PlayerType.PLAYER1).Tank;
             var player2Tank = map.GetPlayer(PlayerType.PLAYER2).Tank;
 
-            SendData(player1Tank?.Gun?.Bullets, "UpdateBullet");
-            SendData(player2Tank?.Gun?.Bullets, "UpdateBullet");
+            SendData(player1Tank?.Gun, "UpdateBullet");
+            SendData(player2Tank?.Gun, "UpdateBullet");
 
             SendData(player1Tank, "UpdateTank");
             SendData(player2Tank, "UpdateTank");

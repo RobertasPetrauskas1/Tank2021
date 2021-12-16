@@ -31,8 +31,8 @@ namespace Tank2021Client.Facade
 
             tankUtils.UpdateTank(player1Tank);
             tankUtils.UpdateTank(player2Tank);
-            bulletUtils.UpdateBullets(player1Tank?.Gun?.Bullets);
-            bulletUtils.UpdateBullets(player2Tank?.Gun?.Bullets);
+            bulletUtils.UpdateBullets(player1Tank?.Gun);
+            bulletUtils.UpdateBullets(player2Tank?.Gun);
             scoreUtils.UpdateScores(player1Tank, player2Tank);
             gameWindow.Invalidate();
         }

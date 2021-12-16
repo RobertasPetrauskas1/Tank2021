@@ -85,12 +85,14 @@ namespace Tank2021.Hubs
             var mapController = MapControllerSingleton.getMapController();
             var specificPlayer = mapController.Map.GetPlayer(player);
             var context = new Context(specificPlayer);
+            var contextExecutor = new ContextExecutor(context);
 
-            var codes = cheatCode.Split(' ').ToList();
+            var codes = new CheatCommand(cheatCode);
             var expressions = new List<IExpression>();
-            for(var index = 0; index < codes.Count; index++)
+            var index = 0;
+            foreach(var code in codes)
             {
-                switch (codes[index])
+                switch (code)
                 {
                     case "-health":
                         expressions.Add(new HealthRestoreExpression(context, specificPlayer.Tank.Health));
@@ -99,9 +101,9 @@ namespace Tank2021.Hubs
                         expressions.Add(new ShootExpression(context));
                         break;
                     case "-move":
-                        if(index + 1 < codes.Count)
+                        if(index + 1 < codes.commands.Count)
                         {
-                            var direction = codes[index + 1];
+                            var direction = codes.commands[index + 1];
                             Direction parsedDirection;
                             try
                             {
@@ -114,8 +116,6 @@ namespace Tank2021.Hubs
                             }
                             var directionExpression = new DirectionExpression(parsedDirection, context);
                             expressions.Add(new MoveExpression(directionExpression, context));
-
-                            codes.RemoveAt(index + 1);
                         }
                         else
                         {
@@ -124,9 +124,19 @@ namespace Tank2021.Hubs
                         }
                         break;
                     default:
-                        await Clients.All.SendAsync("CommandStatus", new CodeStatus(false, player));
-                        return;
+                        try
+                        {
+                            var parsedDirection = (Direction)Enum.Parse(typeof(Direction), code, true);
+                            index++;
+                            continue;
+                        }
+                        catch
+                        {
+                            await Clients.All.SendAsync("CommandStatus", new CodeStatus(false, player));
+                            return;
+                        }
                 }
+                index++;
             }
 
             if (!expressions.Any())
@@ -138,11 +148,13 @@ namespace Tank2021.Hubs
             var caretaker = CaretakerSingleton.getCaretaker();
             caretaker.AddMomento(context.CreateMomento());
 
-            var commandExpression = new CommandExpression(expressions, context);
+            var commandExpression = new CommandExpression(expressions, contextExecutor);
             commandExpression.Interpret();
 
             await Clients.All.SendAsync("CommandStatus", new CodeStatus(true, player));
         }
+
+
 
         public async Task UndoCheatCode(PlayerType player)
         {
@@ -151,6 +163,7 @@ namespace Tank2021.Hubs
 
             var mapController = MapControllerSingleton.getMapController();
             var context = new Context(mapController.Map.GetPlayer(player));
+            var contextExecutor = new ContextExecutor(context);
             var onRestore = false;
 
             while(index > -1)
@@ -169,7 +182,7 @@ namespace Tank2021.Hubs
 
             if (onRestore)
             {
-                context.Undo();
+                contextExecutor.Undo();
                 await Clients.All.SendAsync("CommandUndoStatus", new CodeStatus(true, player));
             }
             else

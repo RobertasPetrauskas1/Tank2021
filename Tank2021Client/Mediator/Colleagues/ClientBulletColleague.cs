@@ -23,9 +23,9 @@ namespace Tank2021Client.Mediator.Colleagues
 
         public override void ReceiveData(object data, string ev)
         {
-            if(ev == "UpdateBullet" && data is List<Bullet> bullets && bullets.Any())
+            if(ev == "UpdateBullet" && data is Gun gun && gun != null && gun.Any())
             {
-                UpdateBullets(bullets);
+                UpdateBullets(gun);
             }
         }
 
@@ -34,12 +34,12 @@ namespace Tank2021Client.Mediator.Colleagues
             _mediator.Notify(ColleagueType.Bullet, data, ev);
         }
 
-        public void UpdateBullets(List<Bullet> bullets)
+        public void UpdateBullets(Gun gun)
         {
             var figures = new List<Figure>();
-            if (bullets != null && bullets.Any())
+            if (gun != null && gun.Any())
             {
-                foreach (var bullet in bullets)
+                foreach (var bullet in gun)
                 {
                     var bulletImage = _imageFactory.GetImage(ImageType.Bullet, bullet.Rotation);
                     figures.Add(new Figure(bullet.Coordinates, bulletImage.Image.Width, bulletImage.Image.Height, bullet.Rotation, bulletImage.Image, false));

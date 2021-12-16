@@ -20,11 +20,11 @@ namespace Tank2021Client.Facade
             ImageFactory = new ImageFactory();
         }
 
-        public void UpdateBullets(List<Bullet> bullets)
+        public void UpdateBullets(Gun gun)
         {
-            if (bullets != null && bullets.Any())
+            if (gun != null && gun.Bullets != null && gun.Any())
             {
-                foreach (var bullet in bullets)
+                foreach (var bullet in gun)
                 {
                     var bulletImage = ImageFactory.GetImage(ImageType.Bullet, bullet.Rotation);
                     window.AddFigure(new Figure(bullet.Coordinates, bulletImage.Image.Width, bulletImage.Image.Height, bullet.Rotation, bulletImage.Image, false));

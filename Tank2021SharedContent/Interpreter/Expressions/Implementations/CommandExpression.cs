@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Tank2021SharedContent.HubRezults;
 
 namespace Tank2021SharedContent.Interpreter.Expressions.Implementations
 {
     public class CommandExpression : IExpression
     {
         private IList<IExpression> _expressions;
-        private Context _context;
+        private ContextExecutor _contextExecutor;
 
-        public CommandExpression(List<IExpression> expressions, Context context)
+        public CommandExpression(List<IExpression> expressions, ContextExecutor contextExecutor)
         {
             _expressions = expressions;
-            _context = context;
+            _contextExecutor = contextExecutor;
         }
 
         public void Interpret()
@@ -20,7 +21,7 @@ namespace Tank2021SharedContent.Interpreter.Expressions.Implementations
             foreach (var expression in _expressions)
                 expression.Interpret();
 
-            _context.Execute();
+            _contextExecutor.Execute();
         }
     }
 }
